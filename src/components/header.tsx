@@ -10,7 +10,7 @@ const Header = () => {
   const imageSrc = "/logo-w.png";
 
   return (
-    <Navbar onMenuOpenChange={setIsMenuOpen}>
+    <Navbar maxWidth="sm" onMenuOpenChange={setIsMenuOpen}>
       <NavbarContent>
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
