@@ -15,7 +15,7 @@ export default function RootLayout({
     <html lang="en" className='dark'>
       <body className={inter.className}>
         <Providers>
-          <div className="container mx-auto">
+          <div className='flex flex-col mx-96 gap-12'>
             <Header />
             {children}
             <Footer />
