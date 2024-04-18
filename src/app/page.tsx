@@ -1,6 +1,10 @@
 
+import Label, { releases } from "@components/label";
+
 const Home = () => (
-  <h1>Hello, Next.js!</h1>
+  <div>
+    <Label releases={releases} showAllLink={"/label"}/>
+  </div>
 );
 
 export default Home;
