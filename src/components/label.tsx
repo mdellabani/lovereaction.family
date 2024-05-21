@@ -2,23 +2,23 @@
 
 import React, { useState } from 'react';
 import AudioPlayer from '@components/audioPlayer';
-import { ReleaseInfo } from '@components/releaseInfo';
+import { TrackInfo, Universe } from '@components/trackInfo';
 
 export interface LabelProps {
- releases: ReleaseInfo[];
+ releases: TrackInfo[];
  showAllLink: string;
 }
 
-export const releases : ReleaseInfo[] = [
-    {id: "Roots-001", title: "Save the Child in You", artist: "Z.Zee", imageUrl:"/Roots-001.jpg", soundCloudUrl: "https://soundcloud.com/lovereactionfamily/zzee-save-the-child-in-you?in=lovereactionfamily/sets/z-zee-save-the-child-in-you"},
-    {id: "LR-001", title: "Disco Lore", artist: "Mirlaqi", imageUrl:"/LR-001.jpg", soundCloudUrl: "https://soundcloud.com/lovereactionfamily/mirlaqi-disco-lore-snippets?in=lovereactionfamily/sets/mirlaqi-disco-lore"},
+export const releases : TrackInfo[] = [
+    {id: "Roots-001", type: Universe.ROOTS, title: "Save the Child in You", artist: "Z.Zee", imageUrl:"/Roots-001.jpg", url: "https://soundcloud.com/lovereactionfamily/sets/z-zee-save-the-child-in-you"},
+    {id: "LR-001", type: Universe.LR, title: "Disco Lore", artist: "Mirlaqi", imageUrl:"/LR-001.jpg", url: "https://soundcloud.com/lovereactionfamily/sets/mirlaqi-disco-lore"},
 ];
 
 
 const Label = ({ releases, showAllLink }: LabelProps) => {
- const [currentTrack, setCurrentTrack] = useState<ReleaseInfo | null>(null);
+ const [currentTrack, setCurrentTrack] = useState<TrackInfo | null>(null);
 
- const playTrack = (track: ReleaseInfo) => {
+ const playTrack = (track: TrackInfo) => {
     setCurrentTrack(track);
  };
 
@@ -44,12 +44,7 @@ const Label = ({ releases, showAllLink }: LabelProps) => {
         </div>
       )}
       {currentTrack && (
-        <AudioPlayer
-            id={currentTrack.id}
-            title={currentTrack.title}
-            artist={currentTrack.artist}
-            imageUrl={currentTrack.imageUrl}
-            soundCloudUrl={currentTrack.soundCloudUrl}
+        <AudioPlayer trackInfo = {currentTrack}
         />
       )}
     </div>
