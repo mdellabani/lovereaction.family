@@ -2,7 +2,7 @@
 
 import { Link, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle } from "@nextui-org/react";
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -42,35 +42,6 @@ const Header = () => {
     </Navbar>
   );
 };
-
-export const useDarkMode = () => {
-  const [isDarkMode, setIsDarkMode] = useState(checkDarkMode());
-
-  function checkDarkMode() {
-    return document.body.classList.contains("dark");
-  }
-
-  useEffect(() => {
-    setIsDarkMode(checkDarkMode);
-
-    const mutationObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === "class") {
-          setIsDarkMode(checkDarkMode());
-        }
-      });
-    });
-
-    mutationObserver.observe(document.body, { attributes: true });
-
-    return () => {
-      mutationObserver.disconnect();
-    };
-  }, []);
-
-  return isDarkMode;
-};
-
 
 interface NavSection {
  name: string;

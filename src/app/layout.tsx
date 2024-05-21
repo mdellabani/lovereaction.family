@@ -15,9 +15,9 @@ export default function RootLayout({
     <html lang="en" className='dark'>
       <body className={inter.className}>
         <Providers>
-          <div className='flex flex-col mx-96 gap-12'>
+          <div className='flex flex-col mx-96 gap-12 h-screen'>
             <Header />
-            {children}
+            <div className="grow">{children}</div>
             <Footer />
           </div>
         </Providers>

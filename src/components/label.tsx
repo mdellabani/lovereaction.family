@@ -4,10 +4,6 @@ import React, { useState } from 'react';
 import AudioPlayer from '@components/audioPlayer';
 import { TrackInfo, Universe } from '@components/trackInfo';
 
-export interface LabelProps {
- releases: TrackInfo[];
- showAllLink: string;
-}
 
 export const releases : TrackInfo[] = [
     {id: "Roots-001", type: Universe.ROOTS, title: "Save the Child in You", artist: "Z.Zee", imageUrl:"/Roots-001.jpg", url: "https://soundcloud.com/lovereactionfamily/sets/z-zee-save-the-child-in-you"},
@@ -15,7 +11,7 @@ export const releases : TrackInfo[] = [
 ];
 
 
-const Label = ({ releases, showAllLink }: LabelProps) => {
+const Label = ({ showAllLink }: {showAllLink : string}) => {
  const [currentTrack, setCurrentTrack] = useState<TrackInfo | null>(null);
 
  const playTrack = (track: TrackInfo) => {

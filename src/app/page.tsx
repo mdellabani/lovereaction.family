@@ -3,7 +3,7 @@ import Label, { releases } from "@components/label";
 
 const Home = () => (
   <div>
-    <Label releases={releases} showAllLink={"/label"}/>
+    <Label showAllLink={"/label"}/>
   </div>
 );
 
