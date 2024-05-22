@@ -1,7 +1,7 @@
 'use client'
 
 import { TrackInfo } from '@components/audio';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { usePlayer } from './playerProvider';
 
@@ -18,7 +18,6 @@ export interface PlayerState {
   loaded: Number,
   duration: Number,
 }
-
 
 const AudioPlayer = ({ trackInfo }: { trackInfo: TrackInfo}) => {
   const initialPlayerState : PlayerState = {
@@ -102,7 +101,8 @@ const AudioPlayer = ({ trackInfo }: { trackInfo: TrackInfo}) => {
 
   const handleSeekMouseUp = (e : React.MouseEvent<HTMLInputElement>) => {
     setState({...currentState, seeking: false })
-    player.seekTo(parseFloat(e.target.value))
+    const target = e.target as HTMLInputElement;
+    player?.current?.seekTo(parseFloat(target.value))
   }
 
   const handleProgress = (state : PlayerState) => {
@@ -131,9 +131,7 @@ const AudioPlayer = ({ trackInfo }: { trackInfo: TrackInfo}) => {
     )
   }
 
-  const ref : ReactPlayer = player => {
-    this.player = player
-  }
+  const player = useRef<ReactPlayer | null>(null);
 
   const { playlist: currentPlaylist, trackIndex: currentTrackIndex, incrementTrackIndex } = usePlayer();
 
@@ -141,7 +139,7 @@ const AudioPlayer = ({ trackInfo }: { trackInfo: TrackInfo}) => {
     <div>
       <ReactPlayer
         // className="hidden"
-        ref={this.ref}
+        ref={player}
         url={trackInfo.url}
         onEnded={incrementTrackIndex}
       />
