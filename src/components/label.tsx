@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AudioPlayer from '@components/audioPlayer';
 import { TrackInfo, Universe } from '@components/audio';
+import { usePlayer } from './playerProvider';
 
 
 export const releases : TrackInfo[] = [
@@ -12,20 +13,24 @@ export const releases : TrackInfo[] = [
 
 
 const Label = ({ showAllLink }: {showAllLink : string}) => {
-  const [currentTrack, setCurrentTrack] = useState<TrackInfo | null>(null);
 
-  const playTrack = (track: TrackInfo) => {
-    setCurrentTrack(track);
-  };
+  const { playlist, trackIndex, showPlayer, incrementTrackIndex, setShowPlayer, setTrackIndex, updatePlaylist } = usePlayer();
+
+  const playRelease = (index : number) => {
+    setShowPlayer(true);
+    setTrackIndex(index);
+  }
+
+  useEffect(() => updatePlaylist(releases));
 
   return (
-    <div className="flex flex-wrap justify-center items-center">
-      {releases.map((release) => (
+    <div className="flex flex-nowrap justify-center items-center">
+      {releases.map((release ,index) => (
         <div key={release.id} className="m-2">
           <div className="relative">
             <img src={release.imageUrl} alt={release.title} className="w-full h-64 object-cover" />
             <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center">
-              <button onClick={() => playTrack(release)} className="text-white">Play</button>
+              <button onClick={() => playRelease(index)} className="text-white">Play</button>
             </div>
           </div>
           <div className="text-center">
@@ -38,10 +43,6 @@ const Label = ({ showAllLink }: {showAllLink : string}) => {
         <div className="text-center">
           <a href={showAllLink} className="text-blue-500 hover:text-blue-700">Show All</a>
         </div>
-      )}
-      {currentTrack && (
-        <AudioPlayer trackInfo = {currentTrack}
-        />
       )}
     </div>
  );

@@ -4,6 +4,7 @@ import { TrackInfo } from '@components/audio';
 import { ChangeEvent, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { usePlayer } from './playerProvider';
+import { Duration } from './duration';
 
 export interface PlayerState {
   url?: string | null
@@ -14,12 +15,12 @@ export interface PlayerState {
   muted?: boolean
   playbackRate?: number
   pip?: boolean
-  played: Number,
-  loaded: Number,
-  duration: Number,
+  played: number,
+  loaded: number,
+  duration: number,
 }
 
-const AudioPlayer = ({ trackInfo }: { trackInfo: TrackInfo}) => {
+const AudioPlayer = () => {
   const initialPlayerState : PlayerState = {
     pip: false,
     playing: true,
@@ -31,7 +32,7 @@ const AudioPlayer = ({ trackInfo }: { trackInfo: TrackInfo}) => {
     loop: false
   };
 
-  const [currentState, setState] = useState<PlayerState>(initialPlayerState);
+  const [state, setState] = useState<PlayerState>(initialPlayerState);
 
   const load = (url : string) => {
     setState({
@@ -44,63 +45,63 @@ const AudioPlayer = ({ trackInfo }: { trackInfo: TrackInfo}) => {
   }
 
   const handlePlayPause = () => {
-    setState({...currentState, playing: !currentState.playing })
+    setState({...state, playing: !state.playing })
   }
 
   const handleStop = () => {
-    setState({...currentState, url: null, playing: false })
+    setState({...state, url: null, playing: false })
   }
 
   const handleToggleLoop = () => {
-    setState({...currentState, loop: !currentState.loop })
+    setState({...state, loop: !state.loop })
   }
 
   const handleVolumeChange = (e : ChangeEvent<HTMLInputElement>) => {
-    setState({...currentState, volume: parseFloat(e.target.value) })
+    setState({...state, volume: parseFloat(e.target.value) })
   }
 
   const handleToggleMuted = () => {
-    setState({...currentState, muted: !currentState.muted })
+    setState({...state, muted: !state.muted })
   }
 
   const handleSetPlaybackRate = (e : ChangeEvent<HTMLInputElement>) => {
-    setState({...currentState, playbackRate: parseFloat(e.target.value) })
+    setState({...state, playbackRate: parseFloat(e.target.value) })
   }
 
   const handleTogglePIP = () => {
-    setState({...currentState, pip: !currentState.pip })
+    setState({...state, pip: !state.pip })
   }
 
   const handlePlay = () => {
     console.log('onPlay')
-    setState({...currentState, playing: true })
+    setState({...state, playing: true })
   }
 
   const handleEnablePIP = () => {
     console.log('onEnablePIP')
-    setState({...currentState, pip: true })
+    setState({...state, pip: true })
   }
 
   const handleDisablePIP = () => {
     console.log('onDisablePIP')
-    setState({...currentState, pip: false })
+    setState({...state, pip: false })
   }
 
   const handlePause = () => {
     console.log('onPause')
-    setState({...currentState, playing: false })
+    setState({...state, playing: false })
   }
 
   const handleSeekMouseDown = (__ : React.MouseEvent<HTMLInputElement>) => {
-    setState({...currentState, seeking: true })
+    setState({...state, seeking: true })
   }
 
   const handleSeekChange = (e : React.ChangeEvent<HTMLInputElement>) => {
-    setState({...currentState, played: parseFloat(e.target.value) })
+    setState({...state, played: parseFloat(e.target.value) })
   }
 
   const handleSeekMouseUp = (e : React.MouseEvent<HTMLInputElement>) => {
-    setState({...currentState, seeking: false })
+    setState({...state, seeking: false })
     const target = e.target as HTMLInputElement;
     player?.current?.seekTo(parseFloat(target.value))
   }
@@ -115,12 +116,12 @@ const AudioPlayer = ({ trackInfo }: { trackInfo: TrackInfo}) => {
 
   const handleEnded = () => {
     console.log('onEnded')
-    setState({...currentState, playing: currentState.loop })
+    setState({...state, playing: state.loop })
   }
 
-  const handleDuration = (duration: Number) => {
+  const handleDuration = (duration: number) => {
     console.log('onDuration', duration)
-    setState({...currentState, duration })
+    setState({...state, duration })
   }
 
   const renderLoadButton = (url : string, label : string) => {
@@ -132,17 +133,66 @@ const AudioPlayer = ({ trackInfo }: { trackInfo: TrackInfo}) => {
   }
 
   const player = useRef<ReactPlayer | null>(null);
-
-  const { playlist: currentPlaylist, trackIndex: currentTrackIndex, incrementTrackIndex } = usePlayer();
-
+  const { playlist, trackIndex, showPlayer, incrementTrackIndex, setShowPlayer, updatePlaylist } = usePlayer();
+  const url : string = playlist[trackIndex].url!;
   return (
     <div>
       <ReactPlayer
-        // className="hidden"
+        className="hidden"
         ref={player}
-        url={trackInfo.url}
+        url={url}
+        // url={playlist.map(release => release.url) }
         onEnded={incrementTrackIndex}
+        {...initialPlayerState}
       />
+      {showPlayer &&
+        <div className='flex flex-nowrap justify-center'>
+          <div>
+            <button onClick={handleStop}>Stop</button>
+            <button onClick={handlePlayPause}>{state.playing ? 'Pause' : 'Play'}</button>
+          </div>
+          <div>
+            Seeking
+            <input
+              type='range' min={0} max={0.999999} step='any'
+              value={state.played}
+              onMouseDown={handleSeekMouseDown}
+              onChange={handleSeekChange}
+              onMouseUp={handleSeekMouseUp}
+            />
+          </div>
+          <div>
+            Volume
+            <input type='range' min={0} max={1} step='any' value={state.volume} onChange={handleVolumeChange} />
+          </div>
+          <div>
+            Mute
+            <input id='muted' type='checkbox' checked={state.muted} onChange={handleToggleMuted} />
+          </div>
+          <div>
+            loop
+            <input id='loop' type='checkbox' checked={state.loop} onChange={handleToggleLoop} />
+          </div>
+          <div>
+            Played
+            <progress max={1} value={state.played} />
+          </div>
+          <div>
+            State
+            <div>
+              duration
+              <Duration seconds={state.duration} />
+            </div>
+            <div>
+              elapesed
+              <Duration seconds={state.duration * state.played} />
+            </div>
+            <div>
+              remaining
+              <Duration seconds={state.duration * (1 - state.played)} />
+            </div>
+          </div>
+        </div>}
     </div>
  );
 };

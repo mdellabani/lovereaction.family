@@ -4,14 +4,18 @@ import { TrackInfo } from './audio';
 interface PlayerContextProps {
 	playlist: TrackInfo[];
 	trackIndex: number;
-	updatePlaylist: (playlist: TrackInfo[]) => void;
+	showPlayer: boolean;
   incrementTrackIndex: () => void;
+	setShowPlayer: (showPlyaer : boolean) => void;
+	setTrackIndex: (index: number) => void;
+	updatePlaylist: (playlist: TrackInfo[]) => void;
 }
 
 const PlayerContext = createContext<PlayerContextProps | undefined>(undefined);
 
 export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const [playlist, setPlaylist] = useState<TrackInfo[]>([]);
+  const [showPlayer, setShowPlayer] = useState(false);
   const [trackIndex, setTrackIndex] = useState(0);
 
   const updatePlaylist = (playlist: TrackInfo[]) => {
@@ -24,7 +28,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   };
 
 	return (
-		<PlayerContext.Provider value={{ playlist, trackIndex, updatePlaylist, incrementTrackIndex }}>
+		<PlayerContext.Provider value={{ playlist, showPlayer, trackIndex, incrementTrackIndex, setShowPlayer, setTrackIndex, updatePlaylist }}>
 			{children}
 		</PlayerContext.Provider>
 	);
@@ -33,7 +37,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 export const usePlayer = () => {
   const context = useContext(PlayerContext);
   if (!context) {
-	throw new Error('usePlayer must be used within a PlayerProvider');
+		throw new Error('usePlayer must be used within a PlayerProvider');
   }
   return context;
 };
