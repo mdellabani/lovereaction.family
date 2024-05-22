@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import AudioPlayer from '@components/audioPlayer';
-import { TrackInfo, Universe } from '@components/trackInfo';
+import { TrackInfo, Universe } from '@components/audio';
 
 
 export const releases : TrackInfo[] = [
@@ -12,13 +12,13 @@ export const releases : TrackInfo[] = [
 
 
 const Label = ({ showAllLink }: {showAllLink : string}) => {
- const [currentTrack, setCurrentTrack] = useState<TrackInfo | null>(null);
+  const [currentTrack, setCurrentTrack] = useState<TrackInfo | null>(null);
 
- const playTrack = (track: TrackInfo) => {
+  const playTrack = (track: TrackInfo) => {
     setCurrentTrack(track);
- };
+  };
 
- return (
+  return (
     <div className="flex flex-wrap justify-center items-center">
       {releases.map((release) => (
         <div key={release.id} className="m-2">

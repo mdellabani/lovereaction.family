@@ -1,3 +1,10 @@
+
+export enum Universe {
+  LR = 1,
+  ROOTS,
+  Zone,
+}
+
 export interface TrackInfo {
   id: string;
   type: Universe,
@@ -7,8 +14,3 @@ export interface TrackInfo {
   url: string;
 }
 
-export enum Universe {
-  LR = 1,
-  ROOTS,
-  Zone,
-}

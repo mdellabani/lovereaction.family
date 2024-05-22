@@ -1,10 +1,14 @@
+import Label from "@components/label";
+import { PlayerProvider } from '@components/playerProvider';
 
-import Label, { releases } from "@components/label";
 
-const Home = () => (
-  <div>
-    <Label showAllLink={"/label"}/>
-  </div>
-);
+const Home = () => {
+
+  return (
+    <div>
+      <Label showAllLink={"/label"}/>
+    </div>
+  );
+};
 
 export default Home;
