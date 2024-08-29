@@ -21,8 +21,6 @@ const Label = ({ showAllLink }: {showAllLink : string}) => {
     setTrackIndex(index);
   }
 
-  useEffect(() => updatePlaylist(releases));
-
   return (
     <div className="flex flex-nowrap justify-center items-center">
       {releases.map((release ,index) => (

@@ -11,6 +11,6 @@ export interface TrackInfo {
   title: string;
   artist: string;
   imageUrl: string;
-  url: string;
+  url: string
 }
 

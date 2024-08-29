@@ -5,7 +5,7 @@ interface PlayerContextProps {
 	playlist: TrackInfo[];
 	trackIndex: number;
 	showPlayer: boolean;
-  incrementTrackIndex: () => void;
+    incrementTrackIndex: () => void;
 	setShowPlayer: (showPlyaer : boolean) => void;
 	setTrackIndex: (index: number) => void;
 	updatePlaylist: (playlist: TrackInfo[]) => void;
@@ -24,7 +24,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 	};
 
   const incrementTrackIndex = () => {
-    setTrackIndex((prevIndex) => (prevIndex + 1) % playlist.length);
+	setTrackIndex((prevIndex) => (prevIndex + 1) % playlist.length);
   };
 
 	return (

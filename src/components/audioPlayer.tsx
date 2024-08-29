@@ -134,19 +134,21 @@ const AudioPlayer = () => {
 
   const player = useRef<ReactPlayer | null>(null);
   const { playlist, trackIndex, showPlayer, incrementTrackIndex, setShowPlayer, updatePlaylist } = usePlayer();
-  const url : string = playlist[trackIndex].url!;
+  console.log("player:" + playlist);
+  const [url, setUrl] = useState<string[]>([]);
   return (
     <div>
       <ReactPlayer
-        className="hidden"
+        // className="hidden"
         ref={player}
-        url={url}
-        // url={playlist.map(release => release.url) }
+        url={"https://soundcloud.com/lovereactionfamily/sets/mirlaqi-disco-lore"}
         onEnded={incrementTrackIndex}
         {...initialPlayerState}
+        width={0}
+        height={0}
       />
       {showPlayer &&
-        <div className='flex flex-nowrap justify-center'>
+        <div className='flex flex-nowrap gap-4 justify-center'>
           <div>
             <button onClick={handleStop}>Stop</button>
             <button onClick={handlePlayPause}>{state.playing ? 'Pause' : 'Play'}</button>
