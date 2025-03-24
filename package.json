@@ -40,14 +40,14 @@
     "typescript": "^5"
   },
   "lint-staged": {
-  "*.{js,jsx,ts,tsx}": [
-    "eslint --fix",
-    "prettier --write"
-  ]
-},
-"husky": {
-  "hooks": {
-    "pre-commit": "lint-staged"
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
-}
 }
