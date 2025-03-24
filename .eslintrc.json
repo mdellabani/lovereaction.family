@@ -1,3 +1,14 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": ["eslint:recommended", "plugin:react/recommended", "next/core-web-vitals", "next/typescript", "plugin:prettier/recommended"],
+  "plugins": ["react", "tailwindcss", "prettier"],
+  "rules": {
+    "react/jsx-sort-props": ["error", {
+      "callbacksLast": true, 
+      "noSortAlphabetically": false
+    }],
+    "tailwindcss/classnames-order": ["error", {
+      "order": ["custom", "utilities"]
+    }],
+    "prettier/prettier": "error"
+  }
 }

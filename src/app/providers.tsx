@@ -1,14 +1,12 @@
 'use client'
 
-import { PlayerProvider } from '@components/playerProvider'
-import {NextUIProvider} from '@nextui-org/react'
+import { PlayerProvider } from 'context/playerProvider'
+import { NextUIProvider } from '@nextui-org/react'
 
-export function Providers({children}: { children: React.ReactNode }) {
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextUIProvider>
-      <PlayerProvider>
-        {children}
-      </PlayerProvider>
+      <PlayerProvider>{children}</PlayerProvider>
     </NextUIProvider>
   )
 }

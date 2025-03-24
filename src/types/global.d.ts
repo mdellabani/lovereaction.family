@@ -1,5 +1,5 @@
 declare global {
- interface Window {
-    SC: any;
- }
+  interface Window {
+    SC: any
+  }
 }
