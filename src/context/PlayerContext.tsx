@@ -61,14 +61,19 @@ const playerReducer = (
       return state
   }
 }
+enum Playlist {
+  LRCool = 'LR-COOL',
+  Podcastel = 'Podcastel',
+}
 
 interface PlayerContextProps extends PlayerState {
+  getPlaylist: (type: Playlist) => TrackInfo[]
   nextTrack: () => void
   previousTrack: () => void
   setTrackIndex: (index: number) => void
   setShowPlayer: (show: boolean) => void
   setCurrentTrackId: (trackId: number) => void
-  loadPlaylist: (type: 'LRCool' | 'Podcastel', trackId?: number) => void
+  loadPlaylist: (type: Playlist, trackId?: number) => void
 }
 
 const PlayerContext = createContext<PlayerContextProps | null>(null)
@@ -89,14 +94,14 @@ const parseRSS = async (): Promise<{
 
   feed.items.forEach((item) => {
     const title = item.title || ''
-    let playlistType: 'LRCool' | 'Podcastel' | null = null
+    let playlistType: Playlist | null = null
     let artist = 'Unknown Artist'
 
-    if (title.startsWith('LR-COOL#')) {
-      playlistType = 'LRCool'
+    if (title.startsWith(Playlist.LRCool)) {
+      playlistType = Playlist.LRCool
       artist = title.split('- ')[1] || artist
-    } else if (title.startsWith('Podcastel #')) {
-      playlistType = 'Podcastel'
+    } else if (title.startsWith(Playlist.Podcastel)) {
+      playlistType = Playlist.Podcastel
       artist = title.split('- ')[1] || artist
     }
 
@@ -111,7 +116,7 @@ const parseRSS = async (): Promise<{
         url: item.enclosure?.url || '',
       }
 
-      if (playlistType === 'LRCool') {
+      if (playlistType === Playlist.LRCool) {
         LRCool.push(track)
       } else {
         Podcastel.push(track)
@@ -124,10 +129,7 @@ const parseRSS = async (): Promise<{
   return { LRCool, Podcastel }
 }
 
-const loadCachedPlaylists = (): Record<
-  'LRCool' | 'Podcastel',
-  TrackInfo[]
-> | null => {
+const loadCachedPlaylists = (): Record<Playlist, TrackInfo[]> | null => {
   const cached = localStorage.getItem(CACHE_KEY)
   if (!cached) return null
 
@@ -196,10 +198,13 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const nextTrack = () => dispatch({ type: 'NEXT_TRACK' })
   const previousTrack = () => dispatch({ type: 'PREV_TRACK' })
 
+  const getPlaylist = (type: Playlist) => playlists[type]
+
   return (
     <PlayerContext.Provider
       value={{
         ...state,
+        getPlaylist,
         loadPlaylist,
         setTrackIndex,
         setShowPlayer,
