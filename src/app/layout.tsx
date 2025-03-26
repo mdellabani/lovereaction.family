@@ -3,7 +3,7 @@ import Header from '@components/header'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
-import AudioPlayer from '@components/audioPlayer'
+import AudioPlayer from '@components/AudioPlayer'
 
 const inter = Inter({ subsets: ['latin'] })
 

@@ -20,7 +20,7 @@
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "baseUrl": "src",
     "paths": {
-      "@components/*": ["components/*"]
+      "@/*": ["./*"]
     }
   },
   "include": [

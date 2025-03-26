@@ -1,6 +1,6 @@
 'use client'
 
-import { PlayerProvider } from 'context/playerProvider'
+import { PlayerProvider } from 'context/PlayerContext'
 import { NextUIProvider } from '@nextui-org/react'
 
 export function Providers({ children }: { children: React.ReactNode }) {

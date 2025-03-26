@@ -1,5 +1,4 @@
 import Label from '@components/label'
-import { PlayerProvider } from 'context/playerProvider'
 
 const Home = () => {
   return (

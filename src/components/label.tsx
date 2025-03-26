@@ -1,13 +1,12 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import AudioPlayer from '@components/audioPlayer'
-import { TrackInfo, Universe } from '@components/audio'
-import { usePlayer } from '../context/playerProvider'
+import React from 'react'
+import { TrackInfo, Universe } from 'types/audio'
+import { usePlayer } from '../context/PlayerContext'
 
 export const releases: TrackInfo[] = [
   {
-    id: 'Roots-001',
+    id: 1,
     type: Universe.ROOTS,
     title: 'Save the Child in You',
     artist: 'Z.Zee',
@@ -15,7 +14,7 @@ export const releases: TrackInfo[] = [
     url: 'https://soundcloud.com/lovereactionfamily/sets/z-zee-save-the-child-in-you',
   },
   {
-    id: 'LR-001',
+    id: 2,
     type: Universe.LR,
     title: 'Disco Lore',
     artist: 'Mirlaqi',
@@ -25,15 +24,7 @@ export const releases: TrackInfo[] = [
 ]
 
 const Label = ({ showAllLink }: { showAllLink: string }) => {
-  const {
-    playlist,
-    trackIndex,
-    showPlayer,
-    nextTrack: incrementTrackIndex,
-    setShowPlayer,
-    setTrackIndex,
-    loadPlaylist: updatePlaylist,
-  } = usePlayer()
+  const { setShowPlayer, setTrackIndex } = usePlayer()
 
   const playRelease = (index: number) => {
     setShowPlayer(true)
