@@ -1,5 +1,13 @@
-import React, { ReactNode, createContext, useContext, useReducer } from 'react'
-import { TrackInfo } from '../types/audio'
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  useState,
+} from 'react'
+import RSSParser from 'rss-parser'
+import { Category, TrackInfo } from '../types/audio'
 
 interface PlayerState {
   playlist: TrackInfo[]
@@ -60,10 +68,82 @@ interface PlayerContextProps extends PlayerState {
   setTrackIndex: (index: number) => void
   setShowPlayer: (show: boolean) => void
   setCurrentTrackId: (trackId: number) => void
-  loadPlaylist: (playlist: TrackInfo[]) => void
+  loadPlaylist: (type: 'LRCool' | 'Podcastel', trackId?: number) => void
 }
 
 const PlayerContext = createContext<PlayerContextProps | null>(null)
+
+const CACHE_KEY = 'rss_cache'
+
+const parseRSS = async (): Promise<{
+  LRCool: TrackInfo[]
+  Podcastel: TrackInfo[]
+}> => {
+  const parser = new RSSParser()
+  const feed = await parser.parseURL('https://example.com/rss-feed')
+
+  const LRCool: TrackInfo[] = []
+  const Podcastel: TrackInfo[] = []
+
+  let trackIdCounter = 1
+
+  feed.items.forEach((item) => {
+    const title = item.title || ''
+    let playlistType: 'LRCool' | 'Podcastel' | null = null
+    let artist = 'Unknown Artist'
+
+    if (title.startsWith('LR-COOL#')) {
+      playlistType = 'LRCool'
+      artist = title.split('- ')[1] || artist
+    } else if (title.startsWith('Podcastel #')) {
+      playlistType = 'Podcastel'
+      artist = title.split('- ')[1] || artist
+    }
+
+    if (playlistType) {
+      const track: TrackInfo = {
+        id: trackIdCounter++,
+        type: Category.LR, // TODO-mde category tag
+        title,
+        artist: artist.trim(),
+        description: item.content || '',
+        imageUrl: item.itunes.image || '',
+        url: item.enclosure?.url || '',
+      }
+
+      if (playlistType === 'LRCool') {
+        LRCool.push(track)
+      } else {
+        Podcastel.push(track)
+      }
+    }
+  })
+  LRCool.sort((a, b) => b.title.localeCompare(a.title))
+  Podcastel.sort((a, b) => b.title.localeCompare(a.title))
+  console.log(LRCool, Podcastel)
+  return { LRCool, Podcastel }
+}
+
+const loadCachedPlaylists = (): Record<
+  'LRCool' | 'Podcastel',
+  TrackInfo[]
+> | null => {
+  const cached = localStorage.getItem(CACHE_KEY)
+  if (!cached) return null
+
+  const { LRCool, Podcastel, timestamp } = JSON.parse(cached)
+  const now = new Date().getTime()
+  const lastCacheTime = new Date(timestamp).setUTCHours(7, 0, 0, 0)
+
+  return now < lastCacheTime ? { LRCool, Podcastel } : null
+}
+
+const cachePlaylists = (LRCool: TrackInfo[], Podcastel: TrackInfo[]) => {
+  localStorage.setItem(
+    CACHE_KEY,
+    JSON.stringify({ LRCool, Podcastel, timestamp: new Date().getTime() }),
+  )
+}
 
 export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(playerReducer, {
@@ -72,23 +152,48 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     trackIndex: 0,
     showPlayer: false,
   })
+  const [playlists, setPlaylists] = useState<{
+    LRCool: TrackInfo[]
+    Podcastel: TrackInfo[]
+  }>({ LRCool: [], Podcastel: [] })
 
-  const loadPlaylist = (playlist: TrackInfo[]) => {
-    dispatch({ type: 'SET_PLAYLIST', playlist })
-    setShowPlayer(true)
+  useEffect(() => {
+    ;(async () => {
+      const cachedPlaylists = loadCachedPlaylists()
+      if (cachedPlaylists) {
+        setPlaylists(cachedPlaylists)
+      } else {
+        const { LRCool, Podcastel } = await parseRSS()
+        setPlaylists({ LRCool, Podcastel })
+        cachePlaylists(LRCool, Podcastel)
+      }
+    })()
+  }, [])
+
+  const loadPlaylist = (type: 'LRCool' | 'Podcastel', trackId?: number) => {
+    const filteredPlaylist = playlists[type]
+
+    dispatch({ type: 'SET_PLAYLIST', playlist: filteredPlaylist })
+    dispatch({ type: 'SET_SHOW_PLAYER', show: true })
+
+    if (trackId) {
+      dispatch({ type: 'SET_CURRENT_TRACK', trackId })
+      dispatch({
+        type: 'SET_TRACK_INDEX',
+        index: filteredPlaylist.findIndex((t) => t.id === trackId),
+      })
+    } else {
+      dispatch({ type: 'SET_TRACK_INDEX', index: 0 })
+    }
   }
 
   const setTrackIndex = (index: number) =>
     dispatch({ type: 'SET_TRACK_INDEX', index })
-
   const setShowPlayer = (show: boolean) =>
     dispatch({ type: 'SET_SHOW_PLAYER', show })
-
   const setCurrentTrackId = (trackId: number) =>
     dispatch({ type: 'SET_CURRENT_TRACK', trackId })
-
   const nextTrack = () => dispatch({ type: 'NEXT_TRACK' })
-
   const previousTrack = () => dispatch({ type: 'PREV_TRACK' })
 
   return (

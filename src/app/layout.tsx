@@ -1,9 +1,9 @@
-import Footer from '@components/footer'
-import Header from '@components/header'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
-import AudioPlayer from '@components/AudioPlayer'
+import Header from '@/components/header'
+import Footer from '@/components/Footer'
+import PlayerContainer from '@/components/PlayerContainer'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,7 +19,7 @@ export default function RootLayout({
           <div className="mx-96 flex h-screen flex-col gap-12">
             <Header />
             <div className="grow">{children}</div>
-            <AudioPlayer />
+            <PlayerContainer />
             <Footer />
           </div>
         </Providers>

@@ -1,4 +1,4 @@
-export enum Universe {
+export enum Category {
   LR = 1,
   ROOTS,
   Zone,
@@ -6,7 +6,7 @@ export enum Universe {
 
 export interface TrackInfo {
   id: number
-  type: Universe
+  type: Category
   title: string
   artist: string
   description?: string

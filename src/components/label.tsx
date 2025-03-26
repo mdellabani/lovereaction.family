@@ -1,13 +1,14 @@
 'use client'
 
 import React from 'react'
-import { TrackInfo, Universe } from 'types/audio'
+import Image from 'next/image'
+import { TrackInfo, Category } from 'types/audio'
 import { usePlayer } from '../context/PlayerContext'
 
 export const releases: TrackInfo[] = [
   {
     id: 1,
-    type: Universe.ROOTS,
+    type: Category.ROOTS,
     title: 'Save the Child in You',
     artist: 'Z.Zee',
     imageUrl: '/Roots-001.jpg',
@@ -15,7 +16,7 @@ export const releases: TrackInfo[] = [
   },
   {
     id: 2,
-    type: Universe.LR,
+    type: Category.LR,
     title: 'Disco Lore',
     artist: 'Mirlaqi',
     imageUrl: '/LR-001.jpg',
@@ -36,7 +37,7 @@ const Label = ({ showAllLink }: { showAllLink: string }) => {
       {releases.map((release, index) => (
         <div className="m-2" key={release.id}>
           <div className="relative">
-            <img
+            <Image
               alt={release.title}
               className="h-64 w-full object-cover"
               src={release.imageUrl}

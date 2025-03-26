@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useReducer } from 'react'
 import ReactPlayer from 'react-player'
+import Image from 'next/image'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
 import {
@@ -120,7 +121,7 @@ const AudioPlayer = () => {
 
       {/* Track Info */}
       <div className="ml-4 flex items-center">
-        <img
+        <Image
           alt="Album Art"
           className="h-10 w-10 rounded-md"
           src={currentTrack?.imageUrl}

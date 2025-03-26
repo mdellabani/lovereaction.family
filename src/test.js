@@ -13,6 +13,7 @@ export const fetchPodcastEpisodes = async (rssUrl) => {
     feed.items.forEach((item, index) => {
       console.log(`\n🔹 Episode ${index + 1}: ${item.title}`)
       console.log(item) // Logs all elements of the item
+      console.log('##############################') // Logs all elements of the item
     })
 
     return feed.items.map((item) => ({
