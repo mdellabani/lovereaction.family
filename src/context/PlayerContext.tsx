@@ -61,19 +61,20 @@ const playerReducer = (
       return state
   }
 }
-enum Playlist {
+
+export enum Playlist {
   LRCool = 'LR-COOL',
   Podcastel = 'Podcastel',
 }
 
 interface PlayerContextProps extends PlayerState {
-  getPlaylist: (type: Playlist) => TrackInfo[]
+  getPlaylist: (type: keyof typeof Playlist) => TrackInfo[]
   nextTrack: () => void
   previousTrack: () => void
   setTrackIndex: (index: number) => void
   setShowPlayer: (show: boolean) => void
   setCurrentTrackId: (trackId: number) => void
-  loadPlaylist: (type: Playlist, trackId?: number) => void
+  loadPlaylist: (type: keyof typeof Playlist, trackId?: number) => void
 }
 
 const PlayerContext = createContext<PlayerContextProps | null>(null)
@@ -85,7 +86,9 @@ const parseRSS = async (): Promise<{
   Podcastel: TrackInfo[]
 }> => {
   const parser = new RSSParser()
-  const feed = await parser.parseURL('https://example.com/rss-feed')
+  const feed = await parser.parseURL(
+    'https://feeds.soundcloud.com/users/soundcloud:users:505440711/sounds.rss',
+  )
 
   const LRCool: TrackInfo[] = []
   const Podcastel: TrackInfo[] = []
@@ -129,7 +132,10 @@ const parseRSS = async (): Promise<{
   return { LRCool, Podcastel }
 }
 
-const loadCachedPlaylists = (): Record<Playlist, TrackInfo[]> | null => {
+const loadCachedPlaylists = (): Record<
+  keyof typeof Playlist,
+  TrackInfo[]
+> | null => {
   const cached = localStorage.getItem(CACHE_KEY)
   if (!cached) return null
 
@@ -198,7 +204,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const nextTrack = () => dispatch({ type: 'NEXT_TRACK' })
   const previousTrack = () => dispatch({ type: 'PREV_TRACK' })
 
-  const getPlaylist = (type: Playlist) => playlists[type]
+  const getPlaylist = (type: keyof typeof Playlist) => playlists[type]
 
   return (
     <PlayerContext.Provider
