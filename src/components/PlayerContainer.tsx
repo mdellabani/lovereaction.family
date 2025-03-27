@@ -10,7 +10,7 @@ const PlayerContainer = () => {
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex min-h-screen flex-col">
       <div className="flex-grow"></div>
       <div className="mt-auto">
         <AudioPlayer />

@@ -74,7 +74,8 @@ interface PlayerContextProps extends PlayerState {
   setTrackIndex: (index: number) => void
   setShowPlayer: (show: boolean) => void
   setCurrentTrackId: (trackId: number) => void
-  loadPlaylist: (type: keyof typeof Playlist, trackId?: number) => void
+  loadPodcast: (type: keyof typeof Playlist, trackId?: number) => void
+  loadPlaylist: (playlist: TrackInfo[], trackId?: number) => void
 }
 
 const PlayerContext = createContext<PlayerContextProps | null>(null)
@@ -175,6 +176,8 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     ;(async () => {
+      console.log('load')
+
       const cachedPlaylists = loadCachedPlaylists()
       if (cachedPlaylists) {
         setPlaylists(cachedPlaylists)
@@ -186,9 +189,9 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     })()
   }, [])
 
-  const loadPlaylist = (type: 'LRCool' | 'Podcastel', trackId?: number) => {
+  const loadPodcast = (type: 'LRCool' | 'Podcastel', trackId?: number) => {
     const filteredPlaylist = playlists[type]
-
+    loadPlaylist(filteredPlaylist, trackId)
     dispatch({ type: 'SET_PLAYLIST', playlist: filteredPlaylist })
     dispatch({ type: 'SET_SHOW_PLAYER', show: true })
 
@@ -197,6 +200,21 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
       dispatch({
         type: 'SET_TRACK_INDEX',
         index: filteredPlaylist.findIndex((t) => t.id === trackId),
+      })
+    } else {
+      dispatch({ type: 'SET_TRACK_INDEX', index: 0 })
+    }
+  }
+
+  const loadPlaylist = (playlist: TrackInfo[], trackId?: number) => {
+    dispatch({ type: 'SET_PLAYLIST', playlist })
+    dispatch({ type: 'SET_SHOW_PLAYER', show: true })
+
+    if (trackId) {
+      dispatch({ type: 'SET_CURRENT_TRACK', trackId })
+      dispatch({
+        type: 'SET_TRACK_INDEX',
+        index: playlist.findIndex((t) => t.id === trackId),
       })
     } else {
       dispatch({ type: 'SET_TRACK_INDEX', index: 0 })
@@ -219,6 +237,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
       value={{
         ...state,
         getPlaylist,
+        loadPodcast,
         loadPlaylist,
         setTrackIndex,
         setShowPlayer,

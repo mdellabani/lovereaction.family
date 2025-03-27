@@ -1,41 +1,80 @@
 'use client'
 
-import React from 'react'
 import Image from 'next/image'
-import { TrackInfo, Category } from 'types/audio'
+import { Category, Release } from 'types/audio'
 import { usePlayer } from '../context/PlayerContext'
 
-export const releases: TrackInfo[] = [
+export const releases: Release[] = [
   {
-    id: 1,
-    type: Category.ROOTS,
-    title: 'Save the Child in You',
+    title: 'Roots-001',
     artist: 'Z.Zee',
+    type: Category.ROOTS,
     imageUrl: '/Roots-001.jpg',
-    url: 'https://soundcloud.com/lovereactionfamily/sets/z-zee-save-the-child-in-you',
+    tracks: [
+      {
+        id: 1,
+        title: 'More of It',
+        url: '/api/audio/streaming?file=Roots-001/A1.mp3',
+      },
+      {
+        id: 1,
+        title: 'One Special Day',
+        url: '/api/audio/streaming?file=Roots-001/A2.mp3',
+      },
+      {
+        id: 1,
+        title: 'Brazil Meets India In Martillo',
+        url: '/api/audio/streaming?file=Roots-001/B1.mp3',
+      },
+      {
+        id: 1,
+        title: "Fleur D'Oranger",
+        url: '/api/audio/streaming?file=Roots-001/B2.mp3',
+      },
+    ],
   },
   {
-    id: 2,
-    type: Category.LR,
-    title: 'Disco Lore',
+    title: 'LR-001',
     artist: 'Mirlaqi',
+    type: Category.LR,
     imageUrl: '/LR-001.jpg',
-    url: 'https://soundcloud.com/lovereactionfamily/sets/mirlaqi-disco-lore',
+    tracks: [
+      {
+        id: 1,
+        title: 'A Dream About You',
+        url: '/api/audio/streaming?file=LR-001/A1.mp3',
+      },
+      {
+        id: 2,
+        title: 'Mimo Sur La Plage',
+        url: '/api/audio/streaming?file=LR-001/A2.mp3',
+      },
+      {
+        id: 3,
+        title: 'Take It As It Comes',
+        url: '/api/audio/streaming?file=LR-001/A3.mp3',
+      },
+      {
+        id: 4,
+        title: 'This Color',
+        url: '/api/audio/streaming?file=LR-001/B1.mp3',
+      },
+      {
+        id: 5,
+        title: 'Disco Lore (LeonxLeon Remix)',
+        url: '/api/audio/streaming?file=LR-001/B1.mp3',
+      },
+    ],
   },
 ]
 
 const Label = ({ showAllLink }: { showAllLink: string }) => {
-  const { setShowPlayer, setTrackIndex } = usePlayer()
-
-  const playRelease = (index: number) => {
-    setShowPlayer(true)
-    setTrackIndex(index)
-  }
+  const { loadPlaylist } = usePlayer()
 
   return (
     <div className="flex flex-nowrap items-center justify-center">
-      {releases.map((release, index) => (
-        <div className="m-2" key={release.id}>
+      {releases.map((release) => (
+        <div className="m-2" key={release.title}>
           <div className="relative">
             <Image
               alt={release.title}
@@ -45,7 +84,10 @@ const Label = ({ showAllLink }: { showAllLink: string }) => {
               width={500}
             />
             <div className="absolute bottom-0 left-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">
-              <button className="text-white" onClick={() => playRelease(index)}>
+              <button
+                className="text-white"
+                onClick={() => loadPlaylist(release.tracks, 0)}
+              >
                 Play
               </button>
             </div>

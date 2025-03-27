@@ -1,7 +1,7 @@
 'use client'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import Header from '@/components/header'
+import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import PlayerContainer from '@/components/PlayerContainer'
 import { PlayerProvider } from '@/context/PlayerContext'

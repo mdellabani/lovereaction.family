@@ -6,11 +6,19 @@ export enum Category {
 
 export interface TrackInfo {
   id: number
-  order: number
-  type: Category
+  order?: number
+  type?: Category
+  title: string
+  artist?: string
+  description?: string
+  imageUrl?: string
+  url: string
+}
+
+export interface Release {
   title: string
   artist: string
-  description?: string
+  type: Category
   imageUrl: string
-  url: string
+  tracks: TrackInfo[]
 }
