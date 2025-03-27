@@ -5,7 +5,7 @@ import AudioPlayer from './AudioPlayer'
 const PlayerContainer = () => {
   const { playlist, showPlayer } = usePlayer()
 
-  if (!playlist.length || !showPlayer) {
+  if (!playlist || !showPlayer) {
     return null
   }
 

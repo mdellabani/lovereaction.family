@@ -14,22 +14,22 @@ export const releases: PlayList[] = [
       {
         id: 1,
         title: 'More of It',
-        url: '/api/audio/streaming?file=Roots-001/A1.mp3',
+        url: '/api/audio?file=Roots-001/A1.mp3',
       },
       {
         id: 1,
         title: 'One Special Day',
-        url: '/api/audio/streaming?file=Roots-001/A2.mp3',
+        url: '/api/audio?file=Roots-001/A2.mp3',
       },
       {
         id: 1,
         title: 'Brazil Meets India In Martillo',
-        url: '/api/audio/streaming?file=Roots-001/B1.mp3',
+        url: '/api/audio?file=Roots-001/B1.mp3',
       },
       {
         id: 1,
         title: "Fleur D'Oranger",
-        url: '/api/audio/streaming?file=Roots-001/B2.mp3',
+        url: '/api/audio?file=Roots-001/B2.mp3',
       },
     ],
   },
@@ -42,27 +42,27 @@ export const releases: PlayList[] = [
       {
         id: 1,
         title: 'A Dream About You',
-        url: '/api/audio/streaming?file=LR-001/A1.mp3',
+        url: '/api/audio?file=LR-001/A1.mp3',
       },
       {
         id: 2,
         title: 'Mimo Sur La Plage',
-        url: '/api/audio/streaming?file=LR-001/A2.mp3',
+        url: '/api/audio?file=LR-001/A2.mp3',
       },
       {
         id: 3,
         title: 'Take It As It Comes',
-        url: '/api/audio/streaming?file=LR-001/A3.mp3',
+        url: '/api/audio?file=LR-001/A3.mp3',
       },
       {
         id: 4,
         title: 'This Color',
-        url: '/api/audio/streaming?file=LR-001/B1.mp3',
+        url: '/api/audio?file=LR-001/B1.mp3',
       },
       {
         id: 5,
         title: 'Disco Lore (LeonxLeon Remix)',
-        url: '/api/audio/streaming?file=LR-001/B1.mp3',
+        url: '/api/audio?file=LR-001/B1.mp3',
       },
     ],
   },
@@ -86,7 +86,7 @@ const Label = ({ showAllLink }: { showAllLink: string }) => {
             <div className="absolute bottom-0 left-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">
               <button
                 className="text-white"
-                onClick={() => loadPlaylist(release.tracks, 0)}
+                onClick={() => loadPlaylist(release, 0)}
               >
                 Play
               </button>

@@ -30,6 +30,7 @@ const playerReducer = (
 ): PlayerState => {
   switch (action.type) {
     case 'SET_PLAYLIST': {
+      console.log('SET_PLAYLIST', action.playlist)
       const newIndex = action.playlist.tracks.findIndex(
         (track) => track.id === state.trackId,
       )

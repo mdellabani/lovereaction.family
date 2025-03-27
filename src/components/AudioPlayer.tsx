@@ -121,7 +121,13 @@ const AudioPlayer = () => {
       />
 
       <div className="ml-4 flex items-center">
-        <Image alt="Album Art" className="h-10 w-10 rounded-md" src={image} />
+        <Image
+          alt="Album Art"
+          className="rounded-md"
+          height={50}
+          src={image}
+          width={50}
+        />
         <div className="ml-2">
           <p className="text-sm font-bold">{currentTrack?.title}</p>
           <p className="text-xs text-gray-500">{currentTrack?.artist}</p>
