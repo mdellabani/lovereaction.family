@@ -40,7 +40,9 @@ const Label = ({ showAllLink }: { showAllLink: string }) => {
             <Image
               alt={release.title}
               className="h-64 w-full object-cover"
+              height={500}
               src={release.imageUrl}
+              width={500}
             />
             <div className="absolute bottom-0 left-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">
               <button className="text-white" onClick={() => playRelease(index)}>

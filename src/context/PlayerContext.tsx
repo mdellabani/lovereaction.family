@@ -1,3 +1,4 @@
+'use client'
 import React, {
   ReactNode,
   createContext,
@@ -6,8 +7,7 @@ import React, {
   useEffect,
   useState,
 } from 'react'
-import RSSParser from 'rss-parser'
-import { Category, TrackInfo } from '../types/audio'
+import { Category, TrackInfo } from '@/types/audio'
 
 interface PlayerState {
   playlist: TrackInfo[]
@@ -85,10 +85,13 @@ const parseRSS = async (): Promise<{
   LRCool: TrackInfo[]
   Podcastel: TrackInfo[]
 }> => {
-  const parser = new RSSParser()
-  const feed = await parser.parseURL(
-    'https://feeds.soundcloud.com/users/soundcloud:users:505440711/sounds.rss',
-  )
+  const feed = await fetch('http://localhost:3000/api/rss', {
+    cache: 'no-store',
+  })
+    .then((res) => res.json())
+    .catch((error) => {
+      throw new Error('Unable to fetch RSS', error)
+    })
 
   const LRCool: TrackInfo[] = []
   const Podcastel: TrackInfo[] = []
@@ -99,18 +102,23 @@ const parseRSS = async (): Promise<{
     const title = item.title || ''
     let playlistType: Playlist | null = null
     let artist = 'Unknown Artist'
+    let order = 0
+    const indexDiez = title.indexOf('#')
 
     if (title.startsWith(Playlist.LRCool)) {
       playlistType = Playlist.LRCool
-      artist = title.split('- ')[1] || artist
+      artist = title.split('_ ')[1] || artist
+      order = parseInt(title.slice(indexDiez + 1, title.indexOf('_')).trim())
     } else if (title.startsWith(Playlist.Podcastel)) {
       playlistType = Playlist.Podcastel
       artist = title.split('- ')[1] || artist
+      order = parseInt(title.slice(indexDiez + 1, title.indexOf('-')).trim())
     }
 
     if (playlistType) {
       const track: TrackInfo = {
         id: trackIdCounter++,
+        order: order,
         type: Category.LR, // TODO-mde category tag
         title,
         artist: artist.trim(),
@@ -126,8 +134,8 @@ const parseRSS = async (): Promise<{
       }
     }
   })
-  LRCool.sort((a, b) => b.title.localeCompare(a.title))
-  Podcastel.sort((a, b) => b.title.localeCompare(a.title))
+  LRCool.sort((a, b) => b.order - a.order)
+  Podcastel.sort((a, b) => b.order - a.order)
   console.log(LRCool, Podcastel)
   return { LRCool, Podcastel }
 }

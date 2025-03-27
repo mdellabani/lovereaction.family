@@ -1,3 +1,4 @@
+'use client'
 import React, { useRef, useEffect, useReducer } from 'react'
 import ReactPlayer from 'react-player'
 import Image from 'next/image'
@@ -73,7 +74,6 @@ const AudioPlayer = () => {
 
   return (
     <div className="flex w-full items-center rounded-lg bg-gray-100 px-4 py-2 shadow-lg">
-      {/* Playback Controls */}
       <div className="flex items-center space-x-4">
         <button onClick={previousTrack}>
           <SkipBack size={20} />

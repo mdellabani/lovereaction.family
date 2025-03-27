@@ -10,13 +10,15 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from '@nextui-org/react'
+import { useTheme } from 'next-themes'
 import Image from 'next/image'
-import React from 'react'
+import React, { useState } from 'react'
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
-  // const imageSrc = useDarkMode() ? "/logo-w.png" : "/logo-b.png";
-  const imageSrc = '/logo-w.png'
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { theme, setTheme } = useTheme()
+  const isDark = theme === 'dark'
+  const imageSrc = isDark ? '/logo-w.png' : '/logo-b.png'
 
   return (
     <Navbar maxWidth="sm" onMenuOpenChange={setIsMenuOpen}>
@@ -53,6 +55,12 @@ const Header = () => {
           </NavbarMenuItem>
         ))}
       </NavbarMenu>
+      <button
+        className="rounded-md bg-gray-200 p-2 dark:bg-gray-800"
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      >
+        {theme === 'dark' ? '🌞 Light' : '🌙 Dark'}
+      </button>
     </Navbar>
   )
 }

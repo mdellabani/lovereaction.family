@@ -1,3 +1,4 @@
+'use client'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/header'
@@ -15,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html className="dark" lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
