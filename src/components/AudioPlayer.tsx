@@ -56,7 +56,8 @@ const playerReducer = (
 
 const AudioPlayer = () => {
   const { playlist, trackIndex, nextTrack, previousTrack } = usePlayer()
-  const currentTrack = playlist[trackIndex]
+  const currentTrack = playlist?.tracks[trackIndex]
+  const image = playlist?.imageUrl || currentTrack?.imageUrl
   const playerRef = useRef<ReactPlayer | null>(null)
 
   const [state, dispatch] = useReducer(playerReducer, {
@@ -119,13 +120,8 @@ const AudioPlayer = () => {
         }
       />
 
-      {/* Track Info */}
       <div className="ml-4 flex items-center">
-        <Image
-          alt="Album Art"
-          className="h-10 w-10 rounded-md"
-          src={currentTrack?.imageUrl}
-        />
+        <Image alt="Album Art" className="h-10 w-10 rounded-md" src={image} />
         <div className="ml-2">
           <p className="text-sm font-bold">{currentTrack?.title}</p>
           <p className="text-xs text-gray-500">{currentTrack?.artist}</p>
