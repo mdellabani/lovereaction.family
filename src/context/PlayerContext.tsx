@@ -28,6 +28,7 @@ const playerReducer = (
   state: PlayerState,
   action: PlayerAction,
 ): PlayerState => {
+  console.log('ac')
   switch (action.type) {
     case 'SET_PLAYLIST': {
       console.log('SET_PLAYLIST', action.playlist)
@@ -177,16 +178,18 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     ;(async () => {
-      console.log('load')
+      console.log('before', state)
 
       const cachedPlaylists = loadCachedPlaylists()
       if (cachedPlaylists) {
         setPlaylists(cachedPlaylists)
       } else {
         const { LRCool, Podcastel } = await parseRSS()
+        console.log('playlist', LRCool)
         setPlaylists({ LRCool, Podcastel })
         cachePlaylists(LRCool, Podcastel)
       }
+      console.log('after', state)
     })()
   }, [])
 

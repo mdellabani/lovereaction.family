@@ -74,7 +74,7 @@ const AudioPlayer = () => {
   }, [trackIndex])
 
   return (
-    <div className="flex w-full items-center rounded-lg bg-gray-100 px-4 py-2 shadow-lg">
+    <div className="flex w-full items-center justify-center rounded-lg bg-gray-100 px-4 py-2 shadow-lg">
       <div className="flex items-center space-x-4">
         <button onClick={previousTrack}>
           <SkipBack size={20} />
@@ -93,8 +93,7 @@ const AudioPlayer = () => {
         </button>
       </div>
 
-      {/* Seekbar */}
-      <div className="mx-4 flex-grow">
+      <div className="mx-80">
         <Slider
           max={1}
           min={0}
@@ -104,7 +103,6 @@ const AudioPlayer = () => {
         />
       </div>
 
-      {/* Volume Control */}
       <button onClick={() => dispatch({ type: 'TOGGLE_MUTE' })}>
         {state.muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
       </button>
@@ -134,7 +132,6 @@ const AudioPlayer = () => {
         </div>
       </div>
 
-      {/* Hidden Audio Player */}
       <ReactPlayer
         height="0"
         loop={state.loop}

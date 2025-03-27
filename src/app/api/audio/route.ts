@@ -1,10 +1,10 @@
 import fs from 'fs'
-import { NextApiRequest } from 'next'
+import { NextRequest } from 'next/server'
 import path from 'path'
 
 const isValidAudioFile = (fileName: string) => fileName.endsWith('.mp3')
 
-export async function GET(req: NextApiRequest) {
+export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const file = searchParams.get('file')
 
@@ -23,10 +23,25 @@ export async function GET(req: NextApiRequest) {
   }
 
   const readStream = fs.createReadStream(audioFilePath)
-  return new Response(readStream, {
+  const stream = new ReadableStream({
+    start(controller) {
+      readStream.on('data', (chunk) => {
+        controller.enqueue(chunk)
+      })
+
+      readStream.on('end', () => {
+        controller.close()
+      })
+
+      readStream.on('error', (err) => {
+        controller.error(err)
+      })
+    },
+  })
+  return new Response(stream, {
     headers: {
       'Content-Type': 'audio/mpeg',
-      'Content-Length': fs.statSync(audioFilePath).size,
+      'Content-Length': fs.statSync(audioFilePath).size.toString(),
     },
   })
 }
