@@ -15,10 +15,10 @@ export interface TrackInfo {
   url: string
 }
 
-export interface Release {
+export interface PlayList {
   title: string
-  artist: string
-  type: Category
-  imageUrl: string
+  artist?: string
+  type?: Category
+  imageUrl?: string
   tracks: TrackInfo[]
 }

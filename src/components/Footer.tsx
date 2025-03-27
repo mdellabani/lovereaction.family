@@ -11,7 +11,7 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="flex flex-col gap-6">
+    <footer className="flex flex-col gap-6 pb-[80px]">
       <ContactForm />
       <Socials />
     </footer>

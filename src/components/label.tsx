@@ -1,10 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import { Category, Release } from 'types/audio'
+import { Category, PlayList } from 'types/audio'
 import { usePlayer } from '../context/PlayerContext'
 
-export const releases: Release[] = [
+export const releases: PlayList[] = [
   {
     title: 'Roots-001',
     artist: 'Z.Zee',
