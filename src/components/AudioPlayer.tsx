@@ -73,6 +73,10 @@ const AudioPlayer = () => {
           step={0.01}
           value={played}
           onChange={(value) => setPlayed(value as number)}
+          onChangeComplete={(value) =>
+            playerRef.current?.seekTo(value as number)
+          }
+          onFocus={() => playerRef.current?.setState({ seeking: true })}
         />
       </div>
 
@@ -121,6 +125,7 @@ const AudioPlayer = () => {
         onDuration={(duration) => setDuration(duration)}
         onEnded={nextTrack}
         onProgress={({ played }) => setPlayed(played)}
+        onSeek={(played) => setPlayed(played)}
       />
     </div>
   )
