@@ -40,7 +40,6 @@ const playerReducer = (
   state: PlayerState,
   action: PlayerAction,
 ): PlayerState => {
-  console.log('ac')
   switch (action.type) {
     case 'SET_PLAYLIST': {
       console.log('SET_PLAYLIST', action.playlist)

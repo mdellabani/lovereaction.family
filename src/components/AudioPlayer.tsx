@@ -12,7 +12,7 @@ import {
 import Image from 'next/image'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 
 const AudioPlayer = () => {
@@ -34,6 +34,7 @@ const AudioPlayer = () => {
     setDuration,
   } = usePlayer()
   const playerRef = useRef<ReactPlayer>(null)
+  const [isSeeking, setIsSeeking] = useState(false)
   const currentTrack = playlist?.tracks[trackIndex]
   const image = playlist?.imageUrl || currentTrack?.imageUrl
 
@@ -72,11 +73,15 @@ const AudioPlayer = () => {
           min={0}
           step={0.01}
           value={played}
-          onChange={(value) => setPlayed(value as number)}
-          onChangeComplete={(value) =>
+          onChange={(value) => {
+            setIsSeeking(true)
+            setPlayed(value as number)
+          }}
+          onChangeComplete={(value) => {
+            setPlayed(value as number)
             playerRef.current?.seekTo(value as number)
-          }
-          onFocus={() => playerRef.current?.setState({ seeking: true })}
+            setIsSeeking(false)
+          }}
         />
       </div>
 
@@ -124,8 +129,10 @@ const AudioPlayer = () => {
         width="0"
         onDuration={(duration) => setDuration(duration)}
         onEnded={nextTrack}
-        onProgress={({ played }) => setPlayed(played)}
-        onSeek={(played) => setPlayed(played)}
+        onProgress={({ played }) => {
+          if (!isSeeking) setPlayed(played)
+        }}
+        onSeek={(played) => setDuration(played)}
       />
     </div>
   )
