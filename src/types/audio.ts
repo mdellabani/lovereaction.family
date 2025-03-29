@@ -6,7 +6,7 @@ export enum Category {
 
 export interface TrackInfo {
   id: number
-  order?: number
+  order: number
   type?: Category
   title: string
   artist?: string

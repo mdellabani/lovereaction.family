@@ -12,65 +12,26 @@ import {
 import Image from 'next/image'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
-import { useEffect, useReducer } from 'react'
-
-interface PlayerState {
-  playing: boolean
-  loop: boolean
-  volume: number
-  muted: boolean
-  played: number
-  duration: number
-}
-
-type PlayerAction =
-  | { type: 'TOGGLE_PLAY' }
-  | { type: 'TOGGLE_LOOP' }
-  | { type: 'TOGGLE_MUTE' }
-  | { type: 'SET_VOLUME'; payload: number }
-  | { type: 'SET_PLAYED'; payload: number }
-  | { type: 'SET_DURATION'; payload: number }
-
-const playerReducer = (
-  state: PlayerState,
-  action: PlayerAction,
-): PlayerState => {
-  switch (action.type) {
-    case 'TOGGLE_PLAY':
-      return { ...state, playing: !state.playing }
-    case 'TOGGLE_LOOP':
-      return { ...state, loop: !state.loop }
-    case 'TOGGLE_MUTE':
-      return { ...state, muted: !state.muted }
-    case 'SET_VOLUME':
-      return { ...state, volume: action.payload }
-    case 'SET_PLAYED':
-      return { ...state, played: action.payload }
-    case 'SET_DURATION':
-      return { ...state, duration: action.payload }
-    default:
-      return state
-  }
-}
 
 const AudioPlayer = () => {
-  const { playlist, trackIndex, nextTrack, previousTrack } = usePlayer()
+  const {
+    playing,
+    loop,
+    volume,
+    muted,
+    played,
+    playlist,
+    trackIndex,
+    nextTrack,
+    previousTrack,
+    togglePlay,
+    toggleLoop,
+    toggleMute,
+    setVolume,
+    setPlayed,
+  } = usePlayer()
   const currentTrack = playlist?.tracks[trackIndex]
   const image = playlist?.imageUrl || currentTrack?.imageUrl
-
-  const [state, dispatch] = useReducer(playerReducer, {
-    playing: false,
-    loop: false,
-    volume: 0.8,
-    muted: false,
-    played: 0,
-    duration: 0,
-  })
-
-  useEffect(() => {
-    dispatch({ type: 'TOGGLE_PLAY' })
-    console.log('Playing track:', trackIndex)
-  }, [trackIndex])
 
   return (
     <div className="flex w-full items-center justify-center bg-gray-100 px-6 py-3 shadow-lg">
@@ -83,9 +44,9 @@ const AudioPlayer = () => {
         </button>
         <button
           className="flex h-12 w-12 items-center justify-center"
-          onClick={() => dispatch({ type: 'TOGGLE_PLAY' })}
+          onClick={() => togglePlay()}
         >
-          {state.playing ? <Pause size={28} /> : <Play size={28} />}
+          {playing ? <Pause size={28} /> : <Play size={28} />}
         </button>
         <button
           className="flex h-10 w-10 items-center justify-center"
@@ -94,8 +55,8 @@ const AudioPlayer = () => {
           <SkipForward size={20} />
         </button>
         <button
-          className={`flex h-10 w-10 items-center justify-center ${state.loop ? 'text-blue-500' : ''}`}
-          onClick={() => dispatch({ type: 'TOGGLE_LOOP' })}
+          className={`flex h-10 w-10 items-center justify-center ${loop ? 'text-blue-500' : ''}`}
+          onClick={() => toggleLoop()}
         >
           <Repeat size={20} />
         </button>
@@ -106,19 +67,17 @@ const AudioPlayer = () => {
           max={1}
           min={0}
           step={0.01}
-          value={state.played}
-          onChange={(value) =>
-            dispatch({ type: 'SET_PLAYED', payload: value as number })
-          }
+          value={played}
+          onChange={(value) => setPlayed(value as number)}
         />
       </div>
 
       <div className="flex items-center space-x-2">
         <button
           className="flex h-8 w-8 items-center justify-center"
-          onClick={() => dispatch({ type: 'TOGGLE_MUTE' })}
+          onClick={() => toggleMute()}
         >
-          {state.muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
         </button>
         <input
           className="w-20"
@@ -126,13 +85,8 @@ const AudioPlayer = () => {
           min="0"
           step="0.01"
           type="range"
-          value={state.volume}
-          onChange={(e) =>
-            dispatch({
-              type: 'SET_VOLUME',
-              payload: parseFloat(e.target.value),
-            })
-          }
+          value={volume}
+          onChange={(e) => setVolume(parseFloat(e.target.value))}
         />
       </div>
 

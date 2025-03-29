@@ -10,10 +10,16 @@ import React, {
 import { Category, PlayList, TrackInfo } from '@/types/audio'
 
 interface PlayerState {
-  playlist: PlayList | null
+  playlist: PlayList
   trackId: number
   trackIndex: number
   showPlayer: boolean
+  playing: boolean
+  loop: boolean
+  volume: number
+  muted: boolean
+  played: number
+  duration: number
 }
 
 type PlayerAction =
@@ -23,6 +29,12 @@ type PlayerAction =
   | { type: 'SET_SHOW_PLAYER'; show: boolean }
   | { type: 'NEXT_TRACK' }
   | { type: 'PREV_TRACK' }
+  | { type: 'TOGGLE_PLAY' }
+  | { type: 'TOGGLE_LOOP' }
+  | { type: 'TOGGLE_MUTE' }
+  | { type: 'SET_VOLUME'; payload: number }
+  | { type: 'SET_PLAYED'; payload: number }
+  | { type: 'SET_DURATION'; payload: number }
 
 const playerReducer = (
   state: PlayerState,
@@ -42,23 +54,38 @@ const playerReducer = (
       }
     }
     case 'SET_CURRENT_TRACK':
-      return { ...state, trackId: action.trackId }
+      //todo-mde set trackIndex
+      return { ...state, playing: true, trackId: action.trackId }
     case 'SET_TRACK_INDEX':
-      return { ...state, trackIndex: action.index }
+      return { ...state, playing: true, trackIndex: action.index }
     case 'SET_SHOW_PLAYER':
       return { ...state, showPlayer: action.show }
     case 'NEXT_TRACK':
       return {
         ...state,
+        playing: true,
         trackIndex: (state.trackIndex + 1) % state.playlist.tracks.length,
       }
     case 'PREV_TRACK':
       return {
         ...state,
+        playing: true,
         trackIndex:
           (state.trackIndex - 1 + state.playlist.tracks.length) %
           state.playlist.tracks.length,
       }
+    case 'TOGGLE_PLAY':
+      return { ...state, playing: !state.playing }
+    case 'TOGGLE_LOOP':
+      return { ...state, loop: !state.loop }
+    case 'TOGGLE_MUTE':
+      return { ...state, muted: !state.muted }
+    case 'SET_VOLUME':
+      return { ...state, volume: action.payload }
+    case 'SET_PLAYED':
+      return { ...state, played: action.payload }
+    case 'SET_DURATION':
+      return { ...state, duration: action.payload }
     default:
       return state
   }
@@ -70,7 +97,7 @@ export enum Podcast {
 }
 
 interface PlayerContextProps extends PlayerState {
-  getPlaylist: (type: keyof typeof Podcast) => PlayList | null
+  getPlaylist: (type: keyof typeof Podcast) => PlayList
   nextTrack: () => void
   previousTrack: () => void
   setTrackIndex: (index: number) => void
@@ -78,6 +105,11 @@ interface PlayerContextProps extends PlayerState {
   setCurrentTrackId: (trackId: number) => void
   loadPodcast: (type: keyof typeof Podcast, trackId?: number) => void
   loadPlaylist: (playlist: PlayList, trackId?: number) => void
+  togglePlay: () => void
+  toggleLoop: () => void
+  toggleMute: () => void
+  setVolume: (volume: number) => void
+  setPlayed: (played: number) => void
 }
 
 const PlayerContext = createContext<PlayerContextProps | null>(null)
@@ -145,7 +177,7 @@ const parseRSS = async (): Promise<{
 
 const loadCachedPlaylists = (): Record<
   keyof typeof Podcast,
-  PlayList | null
+  PlayList
 > | null => {
   const cached = localStorage.getItem(CACHE_KEY)
   if (!cached) return null
@@ -164,17 +196,25 @@ const cachePlaylists = (LRCool: PlayList, Podcastel: PlayList) => {
   )
 }
 
+const defaultPlaylist: PlayList = { title: '', tracks: [] }
+
 export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(playerReducer, {
-    playlist: null,
+    playlist: defaultPlaylist,
     trackId: 0,
     trackIndex: 0,
     showPlayer: false,
+    playing: false,
+    loop: false,
+    volume: 0.8,
+    muted: false,
+    played: 0,
+    duration: 0,
   })
   const [playlists, setPlaylists] = useState<{
-    LRCool: PlayList | null
-    Podcastel: PlayList | null
-  }>({ LRCool: null, Podcastel: null })
+    LRCool: PlayList
+    Podcastel: PlayList
+  }>({ LRCool: defaultPlaylist, Podcastel: defaultPlaylist })
 
   useEffect(() => {
     ;(async () => {
@@ -195,6 +235,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 
   const loadPodcast = (type: keyof typeof Podcast, trackId?: number) => {
     const filteredPlaylist = playlists[type]
+    if (!filteredPlaylist) return
     loadPlaylist(filteredPlaylist, trackId)
     dispatch({ type: 'SET_PLAYLIST', playlist: filteredPlaylist })
     dispatch({ type: 'SET_SHOW_PLAYER', show: true })
@@ -233,8 +274,14 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'SET_CURRENT_TRACK', trackId })
   const nextTrack = () => dispatch({ type: 'NEXT_TRACK' })
   const previousTrack = () => dispatch({ type: 'PREV_TRACK' })
-
   const getPlaylist = (type: keyof typeof Podcast) => playlists[type]
+  const togglePlay = () => dispatch({ type: 'TOGGLE_PLAY' })
+  const toggleLoop = () => dispatch({ type: 'TOGGLE_LOOP' })
+  const toggleMute = () => dispatch({ type: 'TOGGLE_MUTE' })
+  const setVolume = (volume: number) =>
+    dispatch({ type: 'SET_VOLUME', payload: volume })
+  const setPlayed = (played: number) =>
+    dispatch({ type: 'SET_PLAYED', payload: played })
 
   return (
     <PlayerContext.Provider
@@ -248,6 +295,11 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         setCurrentTrackId,
         nextTrack,
         previousTrack,
+        togglePlay,
+        toggleLoop,
+        toggleMute,
+        setVolume,
+        setPlayed,
       }}
     >
       {children}
