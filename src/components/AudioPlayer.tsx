@@ -1,19 +1,18 @@
 'use client'
-import React, { useRef, useEffect, useReducer } from 'react'
-import ReactPlayer from 'react-player'
-import Image from 'next/image'
-import Slider from 'rc-slider'
-import 'rc-slider/assets/index.css'
+import { usePlayer } from '@/context/PlayerContext'
 import {
-  Play,
   Pause,
-  Volume2,
-  VolumeX,
+  Play,
   Repeat,
   SkipBack,
   SkipForward,
+  Volume2,
+  VolumeX,
 } from 'lucide-react'
-import { usePlayer } from '@/context/PlayerContext'
+import Image from 'next/image'
+import Slider from 'rc-slider'
+import 'rc-slider/assets/index.css'
+import { useEffect, useReducer } from 'react'
 
 interface PlayerState {
   playing: boolean
@@ -58,7 +57,6 @@ const AudioPlayer = () => {
   const { playlist, trackIndex, nextTrack, previousTrack } = usePlayer()
   const currentTrack = playlist?.tracks[trackIndex]
   const image = playlist?.imageUrl || currentTrack?.imageUrl
-  const playerRef = useRef<ReactPlayer | null>(null)
 
   const [state, dispatch] = useReducer(playerReducer, {
     playing: false,
@@ -71,84 +69,88 @@ const AudioPlayer = () => {
 
   useEffect(() => {
     dispatch({ type: 'TOGGLE_PLAY' })
+    console.log('Playing track:', trackIndex)
   }, [trackIndex])
 
   return (
-    <div className="flex w-full items-center justify-center rounded-lg bg-gray-100 px-4 py-2 shadow-lg">
+    <div className="flex w-full items-center justify-center bg-gray-100 px-6 py-3 shadow-lg">
       <div className="flex items-center space-x-4">
-        <button onClick={previousTrack}>
+        <button
+          className="flex h-10 w-10 items-center justify-center"
+          onClick={previousTrack}
+        >
           <SkipBack size={20} />
         </button>
-        <button onClick={() => dispatch({ type: 'TOGGLE_PLAY' })}>
-          {state.playing ? <Pause size={24} /> : <Play size={24} />}
+        <button
+          className="flex h-12 w-12 items-center justify-center"
+          onClick={() => dispatch({ type: 'TOGGLE_PLAY' })}
+        >
+          {state.playing ? <Pause size={28} /> : <Play size={28} />}
         </button>
-        <button onClick={nextTrack}>
+        <button
+          className="flex h-10 w-10 items-center justify-center"
+          onClick={nextTrack}
+        >
           <SkipForward size={20} />
         </button>
         <button
-          className={state.loop ? 'text-blue-500' : ''}
+          className={`flex h-10 w-10 items-center justify-center ${state.loop ? 'text-blue-500' : ''}`}
           onClick={() => dispatch({ type: 'TOGGLE_LOOP' })}
         >
           <Repeat size={20} />
         </button>
       </div>
 
-      <div className="mx-80">
+      <div className="mx-10 w-[500px]">
         <Slider
           max={1}
           min={0}
           step={0.01}
           value={state.played}
-          onChange={(value) => dispatch({ type: 'SET_PLAYED', payload: value })}
+          onChange={(value) =>
+            dispatch({ type: 'SET_PLAYED', payload: value as number })
+          }
         />
       </div>
 
-      <button onClick={() => dispatch({ type: 'TOGGLE_MUTE' })}>
-        {state.muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-      </button>
-      <input
-        className="mx-2 w-16"
-        max="1"
-        min="0"
-        step="0.01"
-        type="range"
-        value={state.volume}
-        onChange={(e) =>
-          dispatch({ type: 'SET_VOLUME', payload: parseFloat(e.target.value) })
-        }
-      />
+      <div className="flex items-center space-x-2">
+        <button
+          className="flex h-8 w-8 items-center justify-center"
+          onClick={() => dispatch({ type: 'TOGGLE_MUTE' })}
+        >
+          {state.muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+        </button>
+        <input
+          className="w-20"
+          max="1"
+          min="0"
+          step="0.01"
+          type="range"
+          value={state.volume}
+          onChange={(e) =>
+            dispatch({
+              type: 'SET_VOLUME',
+              payload: parseFloat(e.target.value),
+            })
+          }
+        />
+      </div>
 
-      <div className="ml-4 flex items-center">
+      <div className="ml-6 flex items-center">
         <Image
           alt="Album Art"
-          className="rounded-md"
-          height={50}
+          className="h-14 w-14 rounded-md"
+          height={56}
           src={image}
-          width={50}
+          width={56}
         />
-        <div className="ml-2">
-          <p className="text-sm font-bold">{currentTrack?.title}</p>
-          <p className="text-xs text-gray-500">{currentTrack?.artist}</p>
+        <div className="ml-2 w-[180px] overflow-hidden">
+          <p className="truncate text-sm font-bold">{currentTrack?.title}</p>
+          <p className="truncate text-xs text-gray-500">
+            {currentTrack?.artist}
+          </p>
         </div>
       </div>
-
-      <ReactPlayer
-        height="0"
-        loop={state.loop}
-        muted={state.muted}
-        playing={state.playing}
-        ref={playerRef}
-        url={currentTrack?.url}
-        volume={state.volume}
-        width="0"
-        onDuration={(duration) =>
-          dispatch({ type: 'SET_DURATION', payload: duration })
-        }
-        onEnded={nextTrack}
-        onProgress={({ played }) =>
-          dispatch({ type: 'SET_PLAYED', payload: played })
-        }
-      />
     </div>
   )
 }
