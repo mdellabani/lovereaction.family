@@ -12,6 +12,8 @@ import {
 import Image from 'next/image'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
+import { useRef } from 'react'
+import ReactPlayer from 'react-player'
 
 const AudioPlayer = () => {
   const {
@@ -29,7 +31,9 @@ const AudioPlayer = () => {
     toggleMute,
     setVolume,
     setPlayed,
+    setDuration,
   } = usePlayer()
+  const playerRef = useRef<ReactPlayer>(null)
   const currentTrack = playlist?.tracks[trackIndex]
   const image = playlist?.imageUrl || currentTrack?.imageUrl
 
@@ -105,6 +109,19 @@ const AudioPlayer = () => {
           </p>
         </div>
       </div>
+      <ReactPlayer
+        height="0"
+        loop={loop}
+        muted={muted}
+        playing={playing}
+        ref={playerRef}
+        url={currentTrack?.url}
+        volume={volume}
+        width="0"
+        onDuration={(duration) => setDuration(duration)}
+        onEnded={nextTrack}
+        onProgress={({ played }) => setPlayed(played)}
+      />
     </div>
   )
 }

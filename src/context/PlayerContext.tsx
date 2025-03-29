@@ -110,6 +110,7 @@ interface PlayerContextProps extends PlayerState {
   toggleMute: () => void
   setVolume: (volume: number) => void
   setPlayed: (played: number) => void
+  setDuration: (played: number) => void
 }
 
 const PlayerContext = createContext<PlayerContextProps | null>(null)
@@ -272,7 +273,10 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'SET_SHOW_PLAYER', show })
   const setCurrentTrackId = (trackId: number) =>
     dispatch({ type: 'SET_CURRENT_TRACK', trackId })
-  const nextTrack = () => dispatch({ type: 'NEXT_TRACK' })
+  const nextTrack = () => {
+    dispatch({ type: 'NEXT_TRACK' })
+    setPlayed(0)
+  }
   const previousTrack = () => dispatch({ type: 'PREV_TRACK' })
   const getPlaylist = (type: keyof typeof Podcast) => playlists[type]
   const togglePlay = () => dispatch({ type: 'TOGGLE_PLAY' })
@@ -282,6 +286,8 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'SET_VOLUME', payload: volume })
   const setPlayed = (played: number) =>
     dispatch({ type: 'SET_PLAYED', payload: played })
+  const setDuration = (played: number) =>
+    dispatch({ type: 'SET_DURATION', payload: played })
 
   return (
     <PlayerContext.Provider
@@ -300,6 +306,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         toggleMute,
         setVolume,
         setPlayed,
+        setDuration,
       }}
     >
       {children}
