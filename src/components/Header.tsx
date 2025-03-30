@@ -1,19 +1,13 @@
 'use client'
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  NavbarMenu,
-  NavbarMenuToggle,
-} from '@heroui/navbar'
+import { Navbar, NavbarContent, NavbarItem, NavbarMenu } from '@heroui/navbar'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+import Switch from './Switch'
 
 const Header = () => {
-  const { theme, setTheme } = useTheme()
+  const { theme } = useTheme()
   const isDark = theme === 'dark'
   const imageSrc = isDark ? '/logo-w.png' : '/logo-b.png'
 
@@ -22,35 +16,23 @@ const Header = () => {
   return (
     <div className="flex items-center justify-between p-4">
       <Navbar
-        className="flex items-center justify-center gap-6"
+        className="flex h-[80px] min-h-[80px] items-center justify-center"
         isBordered
         isMenuOpen={isMenuOpen}
         onMenuOpenChange={setIsMenuOpen}
       >
-        <NavbarContent className="sm:hidden" justify="start">
-          <NavbarMenuToggle aria-label={'☰'} />
-        </NavbarContent>
-        <NavbarContent className="pr-3 sm:hidden" justify="center">
-          <NavbarBrand>
-            <Link href="/">
-              <Image alt="Logo" height={100} src={imageSrc} width={100} />
-            </Link>{' '}
-          </NavbarBrand>
+        <NavbarContent>
+          <button className="sm:hidden">☰</button>
+          <Link href="/">
+            <Image alt="Logo" height={100} src={imageSrc} width={100} />
+          </Link>
         </NavbarContent>
 
-        <NavbarContent className="pr-3 sm:flex" gap-4 justify="center">
-          <NavbarBrand>
-            <Link href="/">
-              <Image alt="Logo" height={100} src={imageSrc} width={100} />
-            </Link>{' '}
-          </NavbarBrand>
-        </NavbarContent>
-
-        <NavbarContent className="hidden gap-6 sm:flex">
+        <NavbarContent className="hidden justify-center sm:flex">
           {sections.map((section) => (
             <NavbarItem key={section.route}>
               <Link
-                className="text-black hover:text-gray-500 dark:text-white"
+                className="text-2xl text-black hover:text-gray-500 dark:text-white"
                 href={section.route}
               >
                 {section.name}
@@ -62,7 +44,7 @@ const Header = () => {
           {sections.map((section) => (
             <NavbarItem key={section.route}>
               <Link
-                className="text-black hover:text-gray-500 dark:text-white"
+                className="text-lg text-black hover:text-gray-500 dark:text-white"
                 href={section.route}
               >
                 {section.name}
@@ -70,13 +52,12 @@ const Header = () => {
             </NavbarItem>
           ))}
         </NavbarMenu>
+        <NavbarContent className="center justify-end">
+          <NavbarItem key={'theme'}>
+            <Switch />
+          </NavbarItem>
+        </NavbarContent>
       </Navbar>
-      <button
-        className="rounded-md bg-gray-200 p-2 dark:bg-gray-800"
-        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      >
-        {theme === 'dark' ? '🌞 Light' : '🌙 Dark'}
-      </button>
     </div>
   )
 }
