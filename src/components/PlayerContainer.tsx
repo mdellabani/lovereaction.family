@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import { usePlayer } from '@/context/PlayerContext'
 import AudioPlayer from './AudioPlayer'

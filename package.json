@@ -10,9 +10,10 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@nextui-org/image": "^2.0.25",
-    "@nextui-org/navbar": "^2.0.28",
-    "@nextui-org/react": "^2.2.10",
+    "@heroui/navbar": "^2.2.14",
+    "@heroui/react": "^2.7.5",
+    "@heroui/switch": "^2.2.14",
+    "@heroui/theme": "^2.4.12",
     "emailjs-com": "^3.2.0",
     "framer-motion": "^11.1.1",
     "lucide-react": "^0.484.0",

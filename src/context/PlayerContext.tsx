@@ -120,6 +120,7 @@ const parseRSS = async (): Promise<{
   LRCool: PlayList
   Podcastel: PlayList
 }> => {
+  console.log('fetching rss')
   const feed = await fetch('http://localhost:3000/api/rss', {
     cache: 'no-store',
   })
@@ -217,6 +218,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   }>({ LRCool: defaultPlaylist, Podcastel: defaultPlaylist })
 
   useEffect(() => {
+    console.log('mounting')
     ;(async () => {
       console.log('before', state)
 
