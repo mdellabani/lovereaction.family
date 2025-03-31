@@ -4,7 +4,7 @@ import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
-import Switch from './Switch'
+import ThemeSwitch from './Switch'
 
 const Header = () => {
   const { theme } = useTheme()
@@ -14,21 +14,25 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <div className="flex items-center justify-between p-4">
+    <div className="fixed z-50 flex w-full items-center justify-center bg-white p-4 dark:bg-black">
       <Navbar
-        className="flex h-[80px] min-h-[80px] items-center justify-center"
-        isBordered
+        className="flex max-w-[600px] items-center justify-center border-b border-gray-300 dark:border-gray-700"
+        isBordered={true}
         isMenuOpen={isMenuOpen}
+        shouldHideOnScroll
         onMenuOpenChange={setIsMenuOpen}
       >
-        <NavbarContent>
-          <button className="sm:hidden">☰</button>
+        <NavbarContent className="sm:hidden">
+          <button>☰</button>
           <Link href="/">
             <Image alt="Logo" height={100} src={imageSrc} width={100} />
           </Link>
         </NavbarContent>
 
         <NavbarContent className="hidden justify-center sm:flex">
+          <Link href="/">
+            <Image alt="Logo" height={100} src={imageSrc} width={100} />
+          </Link>
           {sections.map((section) => (
             <NavbarItem key={section.route}>
               <Link
@@ -52,12 +56,8 @@ const Header = () => {
             </NavbarItem>
           ))}
         </NavbarMenu>
-        <NavbarContent className="center justify-end">
-          <NavbarItem key={'theme'}>
-            <Switch />
-          </NavbarItem>
-        </NavbarContent>
       </Navbar>
+      <ThemeSwitch />
     </div>
   )
 }
