@@ -72,7 +72,7 @@ const Label = ({ showAllLink }: { showAllLink: string }) => {
   const { loadPlaylist } = usePlayer()
 
   return (
-    <div className="flex flex-nowrap items-center justify-center">
+    <div className="m-12 flex flex-nowrap items-center justify-center">
       {releases.map((release) => (
         <div className="m-2" key={release.title}>
           <div className="relative">

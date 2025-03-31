@@ -25,9 +25,9 @@ export default function RootLayout({
             enableSystem
           >
             <PlayerProvider>
-              <div className="flex h-screen flex-col gap-12">
+              <div className="flex h-screen flex-col gap-20">
                 <Header />
-                <div className="grow">{children}</div>
+                {children}
                 <PlayerContainer />
                 <Footer />
               </div>

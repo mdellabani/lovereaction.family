@@ -1,5 +1,5 @@
 'use client'
-import { Navbar, NavbarContent, NavbarItem, NavbarMenu } from '@heroui/navbar'
+import { Navbar, NavbarContent, NavbarItem, NavbarMenu } from '@heroui/react'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -14,12 +14,13 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <div className="fixed z-50 flex w-full items-center justify-center bg-white p-4 dark:bg-black">
+    <div className="fixed z-50 flex w-full items-center justify-center bg-white dark:bg-black">
       <Navbar
         className="flex max-w-[600px] items-center justify-center border-b border-gray-300 dark:border-gray-700"
         isBordered={true}
         isMenuOpen={isMenuOpen}
-        shouldHideOnScroll
+        position="sticky"
+        shouldHideOnScroll={false}
         onMenuOpenChange={setIsMenuOpen}
       >
         <NavbarContent className="sm:hidden">

@@ -74,12 +74,19 @@ const ContactForm = () => {
   )
 
   const inputClasses =
-    'bg-neutral-700 border-0 focus:border-0 focus:outline-none focus:ring-1 focus:ring-orange-600 rounded-md placeholder:text-neutral-400 placeholder:text-sm text-neutral-200 text-sm'
+    'border focus:outline-none focus:ring-1 rounded-md placeholder:text-sm text-sm ' +
+    'border-neutral-300 focus:ring-blue-600 shadow-sm ' +
+    'dark:border-neutral-600 dark:focus:ring-orange-600 dark:shadow-md p-4'
+  const buttonClasses =
+    'px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ' +
+    'border border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100 active:bg-neutral-200 ' +
+    'dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 ' +
+    'focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-orange-600 shadow-sm dark:shadow-md'
 
   return (
-    <div className="mx-72 flex flex-col">
+    <div className="mx-10 flex flex-col items-center">
       <form
-        className="grid min-h-[320px] grid-cols-1 gap-y-4"
+        className="grid min-w-[380px] max-w-[480px] grid-cols-1 gap-y-4"
         method="POST"
         ref={form}
         onSubmit={handleSendMessage}
@@ -121,10 +128,10 @@ const ContactForm = () => {
         />
         <button
           aria-label="Submit contact form"
-          className="w-max rounded-full border-2 border-orange-600 bg-stone-900 px-4 py-2 text-sm font-medium text-white shadow-md outline-none hover:bg-stone-800 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-stone-800"
+          className={buttonClasses}
           type="submit"
         >
-          Send Message
+          Wa Let&apos;s Go!
         </button>
       </form>
     </div>
@@ -133,7 +140,7 @@ const ContactForm = () => {
 
 const Socials = () => {
   return (
-    <div className="flex justify-center space-x-4">
+    <div className="m-4 flex justify-center space-x-4">
       {socialLinks.map(({ label, Icon, href }) => (
         <a
           aria-label={label}
