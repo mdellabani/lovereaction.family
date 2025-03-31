@@ -1,24 +1,23 @@
 export enum Category {
-  LR = 1,
-  ROOTS,
-  Zone,
+  LR = 'LR',
+  ROOTS = 'ROOTS',
+  Zone = 'ZONE',
 }
 
-export interface TrackInfo {
+export interface PreviewItem {
+  title?: string
+  artist?: string
+  type?: Category
+  imageUrl?: string
+}
+
+export interface TrackInfo extends PreviewItem {
   id: number
   order: number
-  type?: Category
-  title: string
-  artist?: string
   description?: string
-  imageUrl?: string
   url: string
 }
 
-export interface PlayList {
-  title: string
-  artist?: string
-  type?: Category
-  imageUrl?: string
+export interface PlayList extends PreviewItem {
   tracks: TrackInfo[]
 }

@@ -96,13 +96,14 @@ export enum Podcast {
 }
 
 interface PlayerContextProps extends PlayerState {
-  getPlaylist: (type: keyof typeof Podcast) => PlayList
+  getPlaylist: (type: Podcast) => PlayList
+  getAllTracks: () => TrackInfo[]
   nextTrack: () => void
   previousTrack: () => void
   setTrackIndex: (index: number) => void
   setShowPlayer: (show: boolean) => void
   setCurrentTrackId: (trackId: number) => void
-  loadPodcast: (type: keyof typeof Podcast, trackId?: number) => void
+  loadPodcast: (type: Podcast, trackId?: number) => void
   loadPlaylist: (playlist: PlayList, trackId?: number) => void
   togglePlay: () => void
   toggleLoop: () => void
@@ -117,8 +118,8 @@ const PlayerContext = createContext<PlayerContextProps | null>(null)
 const CACHE_KEY = 'rss_cache'
 
 const parseRSS = async (): Promise<{
-  LRCool: PlayList
-  Podcastel: PlayList
+  [Podcast.LRCool]: PlayList
+  [Podcast.Podcastel]: PlayList
 }> => {
   console.log('fetching rss')
   const feed = await fetch('http://localhost:3000/api/rss', {
@@ -173,13 +174,10 @@ const parseRSS = async (): Promise<{
   LRCool.tracks.sort((a, b) => b.order - a.order)
   Podcastel.tracks.sort((a, b) => b.order - a.order)
   console.log(LRCool, Podcastel)
-  return { LRCool, Podcastel }
+  return { [Podcast.LRCool]: LRCool, [Podcast.Podcastel]: Podcastel }
 }
 
-const loadCachedPlaylists = (): Record<
-  keyof typeof Podcast,
-  PlayList
-> | null => {
+const loadCachedPlaylists = (): Record<Podcast, PlayList> | null => {
   const cached = localStorage.getItem(CACHE_KEY)
   if (!cached) return null
 
@@ -187,13 +185,15 @@ const loadCachedPlaylists = (): Record<
   const now = new Date().getTime()
   const lastCacheTime = new Date(timestamp).setUTCHours(7, 0, 0, 0)
 
-  return now < lastCacheTime ? { LRCool, Podcastel } : null
+  return now < lastCacheTime
+    ? { [Podcast.LRCool]: LRCool, [Podcast.Podcastel]: Podcastel }
+    : null
 }
 
-const cachePlaylists = (LRCool: PlayList, Podcastel: PlayList) => {
+const cachePlaylists = (lrCool: PlayList, podcastel: PlayList) => {
   localStorage.setItem(
     CACHE_KEY,
-    JSON.stringify({ LRCool, Podcastel, timestamp: new Date().getTime() }),
+    JSON.stringify({ lrCool, podcastel, timestamp: new Date().getTime() }),
   )
 }
 
@@ -212,30 +212,29 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     played: 0,
     duration: 0,
   })
-  const [playlists, setPlaylists] = useState<{
-    LRCool: PlayList
-    Podcastel: PlayList
-  }>({ LRCool: defaultPlaylist, Podcastel: defaultPlaylist })
+  const [playlists, setPlaylists] = useState<Record<Podcast, PlayList>>({
+    [Podcast.LRCool]: defaultPlaylist,
+    [Podcast.Podcastel]: defaultPlaylist,
+  })
 
   useEffect(() => {
-    console.log('mounting')
     ;(async () => {
-      console.log('before', state)
-
       const cachedPlaylists = loadCachedPlaylists()
       if (cachedPlaylists) {
         setPlaylists(cachedPlaylists)
       } else {
-        const { LRCool, Podcastel } = await parseRSS()
-        console.log('playlist', LRCool)
-        setPlaylists({ LRCool, Podcastel })
+        const { [Podcast.LRCool]: LRCool, [Podcast.Podcastel]: Podcastel } =
+          await parseRSS()
+        setPlaylists({
+          [Podcast.LRCool]: LRCool,
+          [Podcast.Podcastel]: Podcastel,
+        })
         cachePlaylists(LRCool, Podcastel)
       }
-      console.log('after', state)
     })()
   }, [])
 
-  const loadPodcast = (type: keyof typeof Podcast, trackId?: number) => {
+  const loadPodcast = (type: Podcast, trackId?: number) => {
     const filteredPlaylist = playlists[type]
     if (!filteredPlaylist) return
     loadPlaylist(filteredPlaylist, trackId)
@@ -279,7 +278,11 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     setPlayed(0)
   }
   const previousTrack = () => dispatch({ type: 'PREV_TRACK' })
-  const getPlaylist = (type: keyof typeof Podcast) => playlists[type]
+  const getPlaylist = (type: Podcast) => playlists[type]
+  const getAllTracks = () => [
+    ...playlists[Podcast.LRCool].tracks,
+    ...playlists[Podcast.Podcastel].tracks,
+  ]
   const togglePlay = () => dispatch({ type: 'TOGGLE_PLAY' })
   const toggleLoop = () => dispatch({ type: 'TOGGLE_LOOP' })
   const toggleMute = () => dispatch({ type: 'TOGGLE_MUTE' })
@@ -289,12 +292,12 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'SET_PLAYED', payload: played })
   const setDuration = (played: number) =>
     dispatch({ type: 'SET_DURATION', payload: played })
-
   return (
     <PlayerContext.Provider
       value={{
         ...state,
         getPlaylist,
+        getAllTracks,
         loadPodcast,
         loadPlaylist,
         setTrackIndex,
