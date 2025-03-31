@@ -14,6 +14,7 @@ interface PlayerState {
   trackId: number
   trackIndex: number
   showPlayer: boolean
+  loading: boolean
   playing: boolean
   loop: boolean
   volume: number
@@ -27,6 +28,7 @@ type PlayerAction =
   | { type: 'SET_CURRENT_TRACK'; trackId: number }
   | { type: 'SET_TRACK_INDEX'; index: number }
   | { type: 'SET_SHOW_PLAYER'; show: boolean }
+  | { type: 'SET_LOADING'; loading: boolean }
   | { type: 'NEXT_TRACK' }
   | { type: 'PREV_TRACK' }
   | { type: 'TOGGLE_PLAY' }
@@ -42,7 +44,6 @@ const playerReducer = (
 ): PlayerState => {
   switch (action.type) {
     case 'SET_PLAYLIST': {
-      console.log('SET_PLAYLIST', action.playlist)
       const newIndex = action.playlist.tracks.findIndex(
         (track) => track.id === state.trackId,
       )
@@ -59,6 +60,8 @@ const playerReducer = (
       return { ...state, playing: true, trackIndex: action.index }
     case 'SET_SHOW_PLAYER':
       return { ...state, showPlayer: action.show }
+    case 'SET_LOADING':
+      return { ...state, loading: action.loading }
     case 'NEXT_TRACK':
       return {
         ...state,
@@ -96,7 +99,6 @@ export enum Podcast {
 }
 
 interface PlayerContextProps extends PlayerState {
-  loading: boolean
   getPlaylist: (type: Podcast) => PlayList
   getAllTracks: () => TrackInfo[]
   nextTrack: () => void
@@ -134,7 +136,7 @@ const parseRSS = async (): Promise<{
   const LRCool: PlayList = { title: Podcast.LRCool, tracks: [] }
   const Podcastel: PlayList = { title: Podcast.Podcastel, tracks: [] }
 
-  let trackIdCounter = 1
+  let trackIdCounter = 0
 
   feed.items.forEach((item) => {
     const title = item.title || ''
@@ -174,7 +176,6 @@ const parseRSS = async (): Promise<{
   })
   LRCool.tracks.sort((a, b) => b.order - a.order)
   Podcastel.tracks.sort((a, b) => b.order - a.order)
-  console.log(LRCool, Podcastel)
   return { [Podcast.LRCool]: LRCool, [Podcast.Podcastel]: Podcastel }
 }
 
@@ -206,6 +207,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     trackId: 0,
     trackIndex: 0,
     showPlayer: false,
+    loading: false,
     playing: false,
     loop: false,
     volume: 0.8,
@@ -214,15 +216,14 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     duration: 0,
   })
 
-  const [loading, setLoading] = useState(true)
-  const [playlists, setPlaylists] = useState<Record<Podcast, PlayList>>({
+  const [playlists, setPlaylists] = useState<Record<string, PlayList>>({
     [Podcast.LRCool]: defaultPlaylist,
     [Podcast.Podcastel]: defaultPlaylist,
   })
 
   useEffect(() => {
     ;(async () => {
-      setLoading(true)
+      dispatch({ type: 'SET_LOADING', loading: true })
       const cachedPlaylists = loadCachedPlaylists()
       if (cachedPlaylists) {
         setPlaylists(cachedPlaylists)
@@ -235,7 +236,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         })
         cachePlaylists(LRCool, Podcastel)
       }
-      setLoading(false)
+      dispatch({ type: 'SET_LOADING', loading: false })
     })()
   }, [])
 
@@ -260,7 +261,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const loadPlaylist = (playlist: PlayList, trackId?: number) => {
     dispatch({ type: 'SET_PLAYLIST', playlist })
     dispatch({ type: 'SET_SHOW_PLAYER', show: true })
-
     if (trackId) {
       dispatch({ type: 'SET_CURRENT_TRACK', trackId })
       dispatch({
@@ -280,9 +280,10 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'SET_CURRENT_TRACK', trackId })
   const nextTrack = () => {
     dispatch({ type: 'NEXT_TRACK' })
-    setPlayed(0)
   }
-  const previousTrack = () => dispatch({ type: 'PREV_TRACK' })
+  const previousTrack = () => {
+    dispatch({ type: 'PREV_TRACK' })
+  }
   const getPlaylist = (type: Podcast) => playlists[type]
   const getAllTracks = () => [
     ...playlists[Podcast.LRCool].tracks,
@@ -301,7 +302,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     <PlayerContext.Provider
       value={{
         ...state,
-        loading,
         getPlaylist,
         getAllTracks,
         loadPodcast,

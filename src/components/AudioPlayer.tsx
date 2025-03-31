@@ -43,19 +43,28 @@ const AudioPlayer = () => {
       <div className="flex items-center space-x-4">
         <button
           className="flex h-10 w-10 items-center justify-center"
-          onClick={previousTrack}
+          onClick={() => {
+            if (played < 0.01) {
+              previousTrack()
+            } else {
+              playerRef.current?.seekTo(0)
+            }
+          }}
         >
           <SkipBack size={20} />
         </button>
         <button
           className="flex h-12 w-12 items-center justify-center"
-          onClick={() => togglePlay()}
+          onClick={togglePlay}
         >
           {playing ? <Pause size={28} /> : <Play size={28} />}
         </button>
         <button
           className="flex h-10 w-10 items-center justify-center"
-          onClick={nextTrack}
+          onClick={() => {
+            setPlayed(0)
+            nextTrack()
+          }}
         >
           <SkipForward size={20} />
         </button>
