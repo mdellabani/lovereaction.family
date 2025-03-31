@@ -20,15 +20,24 @@ const PreviewList = <T extends PreviewItem>({
   loading,
 }: PreviewListProps<T>) => {
   const resolvedItems = items()
-  const { loadPlaylist, playing, playlist } = usePlayer()
+  const { loadPlaylist, playing, playlist, togglePlay, setCurrentTrackId } =
+    usePlayer()
   const [current, setCurrent] = useState(-1)
   const handlePlayPause = (item: T, index: number) => {
-    setCurrent(index)
-    if (isPlayList(item)) {
-      console.log('playlist')
-      loadPlaylist(item as PlayList, 0)
+    if (item === resolvedItems[current]) {
+      togglePlay()
     } else {
-      loadPlaylist({ title: 'Podcast', tracks: resolvedItems }, item.id)
+      setCurrent(index)
+      if (isPlayList(item)) {
+        loadPlaylist(item as PlayList, 0)
+      } else {
+        if (playlist.title == 'podcast') {
+          // Already loaded
+          setCurrentTrackId(item.id)
+        } else {
+          loadPlaylist({ title: 'Podcast', tracks: resolvedItems }, item.id)
+        }
+      }
     }
   }
 
