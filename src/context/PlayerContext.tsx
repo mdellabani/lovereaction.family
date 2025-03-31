@@ -96,6 +96,7 @@ export enum Podcast {
 }
 
 interface PlayerContextProps extends PlayerState {
+  loading: boolean
   getPlaylist: (type: Podcast) => PlayList
   getAllTracks: () => TrackInfo[]
   nextTrack: () => void
@@ -212,6 +213,8 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     played: 0,
     duration: 0,
   })
+
+  const [loading, setLoading] = useState(true)
   const [playlists, setPlaylists] = useState<Record<Podcast, PlayList>>({
     [Podcast.LRCool]: defaultPlaylist,
     [Podcast.Podcastel]: defaultPlaylist,
@@ -219,6 +222,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     ;(async () => {
+      setLoading(true)
       const cachedPlaylists = loadCachedPlaylists()
       if (cachedPlaylists) {
         setPlaylists(cachedPlaylists)
@@ -231,6 +235,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         })
         cachePlaylists(LRCool, Podcastel)
       }
+      setLoading(false)
     })()
   }, [])
 
@@ -296,6 +301,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     <PlayerContext.Provider
       value={{
         ...state,
+        loading,
         getPlaylist,
         getAllTracks,
         loadPodcast,
