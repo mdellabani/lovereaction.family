@@ -16,7 +16,7 @@ const PreviewList = <T extends PreviewItem>({
 }: PreviewListProps<T>) => {
   console.log(items)
   return (
-    <div className="relative m-10 w-full border-b-4 border-l-4 border-t-4 border-gray-300 p-4">
+    <div className="relative m-10 w-2/3 border-b-4 border-l-4 border-t-4 border-gray-300 p-4">
       <h2 className="mb-4 pl-2 text-xl font-bold">{title}</h2>
 
       <div className="flex gap-4">

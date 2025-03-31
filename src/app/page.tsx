@@ -7,7 +7,7 @@ const Home = () => {
 
   const { getAllTracks } = usePlayer()
   return (
-    <div className="m-20">
+    <div className="flex flex-col items-center justify-center gap-10">
       <PreviewList items={releases} seeMoreLink="/label" title="Releases" />
       <PreviewList
         items={getAllTracks()}

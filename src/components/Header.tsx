@@ -14,10 +14,10 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <div className="fixed z-50 flex w-full items-center justify-center bg-white dark:bg-black">
+    <div className="fixed top-0 z-50 flex w-full items-center justify-center border-b border-gray-300  bg-white dark:border-gray-700 dark:bg-black">
       <Navbar
-        className="flex max-w-[600px] items-center justify-center border-b border-gray-300 dark:border-gray-700"
-        isBordered={true}
+        className="flex max-w-[600px] items-center justify-center"
+        isBordered={false}
         isMenuOpen={isMenuOpen}
         position="sticky"
         shouldHideOnScroll={false}
