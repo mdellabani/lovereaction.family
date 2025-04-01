@@ -1,6 +1,6 @@
 'use client'
+import { ALL_PODCASTS, orderedTracks } from '@/components/data'
 import { PlayList, TrackInfo } from '@/types/audio'
-import { orderedTracks } from '@/components/data'
 import {
   ReactNode,
   createContext,
@@ -100,13 +100,13 @@ export enum Podcast {
 }
 
 interface PlayerContextProps extends PlayerState {
-  getPodcasts: () => PlayList
+  podcasts: PlayList
   nextTrack: () => void
   previousTrack: () => void
   setTrackIndex: (index: number) => void
   setShowPlayer: (show: boolean) => void
   setCurrentTrackId: (trackId: number) => void
-  loadPlaylist: (playlist: PlayList, trackId?: number) => void
+  loadPlaylist: (playlist: PlayList, trackId: number) => void
   togglePlay: () => void
   toggleLoop: () => void
   toggleMute: () => void
@@ -167,8 +167,7 @@ const parseRSS = async (): Promise<PlayList> => {
     tracks.push(track)
   })
   tracks.sort((a, b) => a.order - b.order)
-  console.log(tracks)
-  return { title: 'Podcasts', tracks: tracks }
+  return { title: ALL_PODCASTS, tracks: tracks }
 }
 
 const loadCachedPlaylists = (): PlayList | null => {
@@ -211,14 +210,13 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     ;(async () => {
       dispatch({ type: 'SET_LOADING', loading: true })
-      const cachedPlaylists = loadCachedPlaylists()
-      if (cachedPlaylists) {
-        setPodcasts(cachedPlaylists)
-      } else {
-        const podcasts = await parseRSS()
-        setPodcasts(podcasts)
+      let podcasts = loadCachedPlaylists()
+      if (!podcasts) {
+        podcasts = await parseRSS()
         cachePlaylists(podcasts)
       }
+      setPodcasts(podcasts)
+      dispatch({ type: 'SET_PLAYLIST', playlist: podcasts })
       dispatch({ type: 'SET_LOADING', loading: false })
     })()
   }, [])
@@ -226,15 +224,11 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const loadPlaylist = (playlist: PlayList, trackId?: number) => {
     dispatch({ type: 'SET_PLAYLIST', playlist })
     dispatch({ type: 'SET_SHOW_PLAYER', show: true })
-    if (trackId) {
-      dispatch({ type: 'SET_CURRENT_TRACK', trackId })
-      dispatch({
-        type: 'SET_TRACK_INDEX',
-        index: playlist.tracks.findIndex((t) => t.id === trackId),
-      })
-    } else {
-      dispatch({ type: 'SET_TRACK_INDEX', index: 0 })
-    }
+    dispatch({ type: 'SET_CURRENT_TRACK', trackId })
+    dispatch({
+      type: 'SET_TRACK_INDEX',
+      index: playlist.tracks.findIndex((t) => t.id === trackId),
+    })
   }
 
   const setTrackIndex = (index: number) =>
@@ -249,7 +243,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const previousTrack = () => {
     dispatch({ type: 'PREV_TRACK' })
   }
-  const getAllTracks = () => podcasts
   const togglePlay = () => dispatch({ type: 'TOGGLE_PLAY' })
   const toggleLoop = () => dispatch({ type: 'TOGGLE_LOOP' })
   const toggleMute = () => dispatch({ type: 'TOGGLE_MUTE' })
@@ -263,7 +256,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     <PlayerContext.Provider
       value={{
         ...state,
-        getPodcasts: getAllTracks,
+        podcasts,
         loadPlaylist,
         setTrackIndex,
         setShowPlayer,

@@ -893,7 +893,7 @@
     "@react-types/table" "3.11.0"
     "@tanstack/react-virtual" "3.11.3"
 
-"@heroui/tabs@2.2.13":
+"@heroui/tabs@2.2.13", "@heroui/tabs@^2.2.13":
   version "2.2.13"
   resolved "https://registry.yarnpkg.com/@heroui/tabs/-/tabs-2.2.13.tgz#df47ffef0cbf7c13cc816a0776b961dae30dd791"
   integrity sha512-HIAAgkInrC23aD4XWY1TvIhy6FhO4LRLp3Q4zOVp4Nxs4G0p20Nv3gndl7NYRr7TB2fLAbQPgDblsXiG/v6Png==

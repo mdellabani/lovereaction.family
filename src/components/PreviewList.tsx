@@ -31,12 +31,7 @@ const PreviewList = <T extends PreviewItem>({
       if (isPlayList(item)) {
         loadPlaylist(item as PlayList, 0)
       } else {
-        if (playlist.title == 'podcast') {
-          // Already loaded
-          setCurrentTrackId(item.id)
-        } else {
-          loadPlaylist({ title: 'Podcast', tracks: resolvedItems }, item.id)
-        }
+        setCurrentTrackId(item.id)
       }
     }
   }

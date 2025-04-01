@@ -131,3 +131,5 @@ export const orderedTracks: Map<string, RSSPodcast> = new Map([
   ['Podcastel #2', { order: 54, type: Category.ZONE }],
   ['Podcastel #1', { order: 55, type: Category.LR }],
 ])
+
+export const ALL_PODCASTS = 'podcasts-All-All'
