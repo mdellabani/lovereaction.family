@@ -1,7 +1,7 @@
 export enum Category {
   LR = 'LR',
   ROOTS = 'ROOTS',
-  Zone = 'ZONE',
+  ZONE = 'ZONE',
 }
 
 export interface PreviewItem {
@@ -20,4 +20,9 @@ export interface TrackInfo extends PreviewItem {
 
 export interface PlayList extends PreviewItem {
   tracks: TrackInfo[]
+}
+
+export interface RSSPodcast {
+  order: number
+  type: Category
 }

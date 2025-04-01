@@ -8,14 +8,14 @@ import { useState } from 'react'
 
 export default function Podcasts() {
   const {
-    getAllTracks,
+    getPodcasts,
     togglePlay,
     setCurrentTrackId,
     loadPlaylist,
     loading,
     playlist,
   } = usePlayer()
-  const tracks = getAllTracks()
+  const podcasts = getPodcasts()
   const [currentTrack, setCurrentTrack] = useState<TrackInfo | null>(null)
 
   const handlePlayPause = (track: TrackInfo) => {
@@ -27,7 +27,7 @@ export default function Podcasts() {
         // Already loaded
         setCurrentTrackId(track.id)
       } else {
-        loadPlaylist({ title: 'Podcast', tracks: tracks }, track.id)
+        loadPlaylist(podcasts, track.id)
       }
     }
   }
@@ -65,7 +65,7 @@ export default function Podcasts() {
 
       <div className="w-full rounded-lg border p-4 shadow-md">
         <div className="flex flex-col gap-2">
-          {tracks.map((track) => (
+          {playlist.tracks.map((track) => (
             <div
               className="flex cursor-pointer items-center gap-4 rounded-md border-b p-2 last:border-b-0 hover:bg-gray-100"
               key={track.id}

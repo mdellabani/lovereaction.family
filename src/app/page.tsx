@@ -4,7 +4,7 @@ import PreviewList from '@/components/PreviewList'
 import { usePlayer } from '@/context/PlayerContext'
 
 const Home = () => {
-  const { getAllTracks, loading } = usePlayer()
+  const { getPodcasts, loading } = usePlayer()
 
   return (
     <div className="flex flex-col items-center justify-center gap-10">
@@ -16,7 +16,7 @@ const Home = () => {
       />
 
       <PreviewList
-        items={() => getAllTracks()}
+        items={() => getPodcasts().tracks}
         loading={loading}
         route="/podcasts"
         title="Podcasts"

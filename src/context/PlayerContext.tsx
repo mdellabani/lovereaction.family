@@ -1,13 +1,14 @@
 'use client'
-import React, {
+import { PlayList, TrackInfo } from '@/types/audio'
+import { orderedTracks } from '@/components/data'
+import {
   ReactNode,
   createContext,
   useContext,
-  useReducer,
   useEffect,
+  useReducer,
   useState,
 } from 'react'
-import { Category, PlayList, TrackInfo } from '@/types/audio'
 
 interface PlayerState {
   playlist: PlayList
@@ -99,14 +100,12 @@ export enum Podcast {
 }
 
 interface PlayerContextProps extends PlayerState {
-  getPlaylist: (type: Podcast) => PlayList
-  getAllTracks: () => TrackInfo[]
+  getPodcasts: () => PlayList
   nextTrack: () => void
   previousTrack: () => void
   setTrackIndex: (index: number) => void
   setShowPlayer: (show: boolean) => void
   setCurrentTrackId: (trackId: number) => void
-  loadPodcast: (type: Podcast, trackId?: number) => void
   loadPlaylist: (playlist: PlayList, trackId?: number) => void
   togglePlay: () => void
   toggleLoop: () => void
@@ -120,10 +119,7 @@ const PlayerContext = createContext<PlayerContextProps | null>(null)
 
 const CACHE_KEY = 'rss_cache'
 
-const parseRSS = async (): Promise<{
-  [Podcast.LRCool]: PlayList
-  [Podcast.Podcastel]: PlayList
-}> => {
+const parseRSS = async (): Promise<PlayList> => {
   console.log('fetching rss')
   const feed = await fetch('http://localhost:3000/api/rss', {
     cache: 'no-store',
@@ -133,69 +129,63 @@ const parseRSS = async (): Promise<{
       throw new Error('Unable to fetch RSS', error)
     })
 
-  const LRCool: PlayList = { title: Podcast.LRCool, tracks: [] }
-  const Podcastel: PlayList = { title: Podcast.Podcastel, tracks: [] }
+  const tracks: TrackInfo[] = []
 
   let trackIdCounter = 0
 
   feed.items.forEach((item) => {
-    const title = item.title || ''
-    let playlistType: Podcast | null = null
-    let artist = 'Unknown Artist'
+    const title = item.title
+    let artist
     let order = 0
-    const indexDiez = title.indexOf('#')
+    let type
 
     if (title.startsWith(Podcast.LRCool)) {
-      playlistType = Podcast.LRCool
-      artist = title.split('_ ')[1] || artist
-      order = parseInt(title.slice(indexDiez + 1, title.indexOf('_')).trim())
+      const content = title.split('_ ')
+      artist = content[1]
+      order = orderedTracks.get(content[0].trim()).order
+      type = orderedTracks.get(content[0].trim()).type
     } else if (title.startsWith(Podcast.Podcastel)) {
-      playlistType = Podcast.Podcastel
-      artist = title.split('- ')[1] || artist
-      order = parseInt(title.slice(indexDiez + 1, title.indexOf('-')).trim())
+      const content = title.split('- ')
+      order = orderedTracks.get(content[0].trim()).order
+      type = orderedTracks.get(content[0].trim()).type
+      artist = content[1]
+    } else {
+      throw new Error('Unknow track type')
     }
 
-    if (playlistType) {
-      const track: TrackInfo = {
-        id: trackIdCounter++,
-        order: order,
-        type: Category.LR, // TODO-mde category tag
-        title,
-        artist: artist.trim(),
-        description: item.content || '',
-        imageUrl: item.itunes.image || '',
-        url: item.enclosure?.url || '',
-      }
-
-      if (playlistType === Podcast.LRCool) {
-        LRCool.tracks.push(track)
-      } else {
-        Podcastel.tracks.push(track)
-      }
+    const track: TrackInfo = {
+      id: trackIdCounter++,
+      order: order,
+      type: type,
+      title,
+      artist: artist.trim(),
+      description: item.content,
+      imageUrl: item.itunes.image,
+      url: item.enclosure?.url,
     }
+
+    tracks.push(track)
   })
-  LRCool.tracks.sort((a, b) => b.order - a.order)
-  Podcastel.tracks.sort((a, b) => b.order - a.order)
-  return { [Podcast.LRCool]: LRCool, [Podcast.Podcastel]: Podcastel }
+  tracks.sort((a, b) => a.order - b.order)
+  console.log(tracks)
+  return { title: 'Podcasts', tracks: tracks }
 }
 
-const loadCachedPlaylists = (): Record<Podcast, PlayList> | null => {
+const loadCachedPlaylists = (): PlayList | null => {
   const cached = localStorage.getItem(CACHE_KEY)
   if (!cached) return null
 
-  const { LRCool, Podcastel, timestamp } = JSON.parse(cached)
+  const { podcasts, timestamp } = JSON.parse(cached)
   const now = new Date().getTime()
   const lastCacheTime = new Date(timestamp).setUTCHours(7, 0, 0, 0)
 
-  return now < lastCacheTime
-    ? { [Podcast.LRCool]: LRCool, [Podcast.Podcastel]: Podcastel }
-    : null
+  return now < lastCacheTime ? podcasts : null
 }
 
-const cachePlaylists = (lrCool: PlayList, podcastel: PlayList) => {
+const cachePlaylists = (podcasts: PlayList) => {
   localStorage.setItem(
     CACHE_KEY,
-    JSON.stringify({ lrCool, podcastel, timestamp: new Date().getTime() }),
+    JSON.stringify({ podcasts, timestamp: new Date().getTime() }),
   )
 }
 
@@ -216,47 +206,22 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     duration: 0,
   })
 
-  const [playlists, setPlaylists] = useState<Record<string, PlayList>>({
-    [Podcast.LRCool]: defaultPlaylist,
-    [Podcast.Podcastel]: defaultPlaylist,
-  })
+  const [podcasts, setPodcasts] = useState<PlayList>(defaultPlaylist)
 
   useEffect(() => {
     ;(async () => {
       dispatch({ type: 'SET_LOADING', loading: true })
       const cachedPlaylists = loadCachedPlaylists()
       if (cachedPlaylists) {
-        setPlaylists(cachedPlaylists)
+        setPodcasts(cachedPlaylists)
       } else {
-        const { [Podcast.LRCool]: LRCool, [Podcast.Podcastel]: Podcastel } =
-          await parseRSS()
-        setPlaylists({
-          [Podcast.LRCool]: LRCool,
-          [Podcast.Podcastel]: Podcastel,
-        })
-        cachePlaylists(LRCool, Podcastel)
+        const podcasts = await parseRSS()
+        setPodcasts(podcasts)
+        cachePlaylists(podcasts)
       }
       dispatch({ type: 'SET_LOADING', loading: false })
     })()
   }, [])
-
-  const loadPodcast = (type: Podcast, trackId?: number) => {
-    const filteredPlaylist = playlists[type]
-    if (!filteredPlaylist) return
-    loadPlaylist(filteredPlaylist, trackId)
-    dispatch({ type: 'SET_PLAYLIST', playlist: filteredPlaylist })
-    dispatch({ type: 'SET_SHOW_PLAYER', show: true })
-
-    if (trackId) {
-      dispatch({ type: 'SET_CURRENT_TRACK', trackId })
-      dispatch({
-        type: 'SET_TRACK_INDEX',
-        index: filteredPlaylist.tracks.findIndex((t) => t.id === trackId),
-      })
-    } else {
-      dispatch({ type: 'SET_TRACK_INDEX', index: 0 })
-    }
-  }
 
   const loadPlaylist = (playlist: PlayList, trackId?: number) => {
     dispatch({ type: 'SET_PLAYLIST', playlist })
@@ -284,11 +249,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const previousTrack = () => {
     dispatch({ type: 'PREV_TRACK' })
   }
-  const getPlaylist = (type: Podcast) => playlists[type]
-  const getAllTracks = () => [
-    ...playlists[Podcast.LRCool].tracks,
-    ...playlists[Podcast.Podcastel].tracks,
-  ]
+  const getAllTracks = () => podcasts
   const togglePlay = () => dispatch({ type: 'TOGGLE_PLAY' })
   const toggleLoop = () => dispatch({ type: 'TOGGLE_LOOP' })
   const toggleMute = () => dispatch({ type: 'TOGGLE_MUTE' })
@@ -302,9 +263,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     <PlayerContext.Provider
       value={{
         ...state,
-        getPlaylist,
-        getAllTracks,
-        loadPodcast,
+        getPodcasts: getAllTracks,
         loadPlaylist,
         setTrackIndex,
         setShowPlayer,
