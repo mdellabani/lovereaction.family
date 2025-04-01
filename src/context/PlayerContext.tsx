@@ -221,7 +221,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     })()
   }, [])
 
-  const loadPlaylist = (playlist: PlayList, trackId?: number) => {
+  const loadPlaylist = (playlist: PlayList, trackId: number) => {
     dispatch({ type: 'SET_PLAYLIST', playlist })
     dispatch({ type: 'SET_SHOW_PLAYER', show: true })
     dispatch({ type: 'SET_CURRENT_TRACK', trackId })

@@ -1,10 +1,9 @@
 import { usePlayer } from '@/context/PlayerContext'
 import { PlayList, PreviewItem, TrackInfo } from '@/types/audio'
 import { Spinner } from '@heroui/spinner'
-import { Pause, Play } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+import PreviewSummary from './PreviewSummary'
 
 type PreviewListProps<T extends PreviewItem> = {
   title: string
@@ -20,8 +19,7 @@ const PreviewList = <T extends PreviewItem>({
   loading,
 }: PreviewListProps<T>) => {
   const resolvedItems = items()
-  const { loadPlaylist, playing, playlist, togglePlay, setCurrentTrackId } =
-    usePlayer()
+  const { loadPlaylist, playlist, togglePlay, setCurrentTrackId } = usePlayer()
   const [current, setCurrent] = useState(-1)
   const handlePlayPause = (item: T, index: number) => {
     if (item === resolvedItems[current]) {
@@ -60,35 +58,13 @@ const PreviewList = <T extends PreviewItem>({
         ) : (
           <div className="flex gap-4">
             {resolvedItems.slice(0, 3).map((item, index) => (
-              <div
-                className={`group-${title} group w-48 rounded-lg border p-4 text-center shadow-md`}
+              <PreviewSummary
+                handlePlayPause={handlePlayPause}
+                index={index}
+                isActive={isActive}
+                item={item}
                 key={index}
-              >
-                <div className={`group-${title} relative`}>
-                  <Image
-                    alt={item.title}
-                    className="h-40 w-40 rounded-lg object-cover"
-                    height={200}
-                    src={item.imageUrl}
-                    width={200}
-                  />
-                  <button
-                    className="absolute inset-1/4 flex items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                    onClick={() => handlePlayPause(item, index)}
-                  >
-                    {isActive(item) && playing ? (
-                      <Pause size={24} />
-                    ) : (
-                      <Play size={24} />
-                    )}
-                  </button>
-                </div>
-                <p className="mt-2 text-sm text-gray-500">[{item.type}]</p>
-                <p className="font-bold">{item.title}</p>
-                {item.artist && (
-                  <p className="text-sm text-gray-600">{item.artist}</p>
-                )}
-              </div>
+              />
             ))}
           </div>
         )}

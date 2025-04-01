@@ -1,14 +1,13 @@
 'use client'
 
+import { PLAYLIST_CATEGORIES, TRACK_TYPES } from '@/components/data'
+import PreviewDetails from '@/components/PreviewDetails'
 import { usePlayer } from '@/context/PlayerContext'
 import { PlayList, TrackInfo } from '@/types/audio'
 import { Spinner } from '@heroui/spinner'
 import { Tab, Tabs } from '@heroui/tabs'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-
-const PLAYLIST_CATEGORIES = ['All', 'LR-COOL', 'Podcastel']
-const TRACK_TYPES = ['All', 'LR', 'ROOTS', 'ZONE']
 
 export default function Podcasts() {
   const { togglePlay, loadPlaylist, loading, playlist, podcasts } = usePlayer()
@@ -35,7 +34,6 @@ export default function Podcasts() {
 
   const filterPlayList = () => {
     const newTrack = filteredTracks()
-    console.log(filteredPlaylist, podcastFilter, categoryFilter, newTrack)
     if (!matchesFilter() || filteredPlaylist.tracks.length != newTrack.length) {
       // Do not load playlist since it stops the current stream
       setfilteredPlaylist({
@@ -68,26 +66,7 @@ export default function Podcasts() {
 
   return (
     <div className="mx-auto flex w-1/2 flex-col items-center gap-4 p-4">
-      {currentTrack && (
-        <div className="flex w-full gap-4 rounded-lg border p-4 shadow-md">
-          <div className="flex w-1/4 flex-col items-center text-center">
-            <Image
-              alt={currentTrack.title}
-              className="self-center rounded-lg"
-              height={200}
-              src={currentTrack.imageUrl}
-              width={200}
-            />
-            <h2 className="mt-2 min-h-[4rem] w-full break-words text-center text-lg font-bold">
-              {currentTrack.title}
-            </h2>
-            <p className="text-sm text-gray-600">{currentTrack.artist}</p>
-          </div>
-          <div className="h-82 flex w-3/4 items-center justify-center overflow-y-auto p-2">
-            <p className="text-sm text-gray-800">{currentTrack.description}</p>
-          </div>
-        </div>
-      )}
+      {currentTrack && <PreviewDetails track={currentTrack} />}
       <Tabs
         variant="underlined"
         onSelectionChange={(key) => {
