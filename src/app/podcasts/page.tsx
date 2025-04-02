@@ -2,11 +2,11 @@
 
 import { PLAYLIST_CATEGORIES, TRACK_TYPES } from '@/components/data'
 import PreviewDetails from '@/components/PreviewDetails'
+import TrackItem from '@/components/TrackItem'
 import { usePlayer } from '@/context/PlayerContext'
 import { PlayList, TrackInfo } from '@/types/audio'
 import { Spinner } from '@heroui/spinner'
 import { Tab, Tabs } from '@heroui/tabs'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 export default function Podcasts() {
@@ -90,26 +90,11 @@ export default function Podcasts() {
       <div className="w-full rounded-lg border p-4 shadow-md">
         <div className="flex flex-col gap-2">
           {filteredPlaylist.tracks.map((track) => (
-            <div
-              className="flex cursor-pointer items-center gap-4 rounded-md border-b p-2 last:border-b-0 hover:bg-gray-100"
+            <TrackItem
+              handlePlayPause={handlePlayPause}
               key={track.id}
-              onClick={() => handlePlayPause(track)}
-            >
-              <div className="group relative">
-                <Image
-                  alt={track.title}
-                  className="h-12 w-12 rounded-lg object-cover"
-                  height={50}
-                  src={track.imageUrl}
-                  width={50}
-                />
-              </div>
-
-              <div>
-                <p className="text-sm font-medium">{track.artist}</p>
-                <p className="text-sm text-gray-600">{track.title}</p>
-              </div>
-            </div>
+              track={track}
+            />
           ))}
         </div>
       </div>

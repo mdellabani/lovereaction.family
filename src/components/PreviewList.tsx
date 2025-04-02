@@ -83,7 +83,7 @@ const PreviewList = <T extends PreviewItem>({
   )
 }
 
-const isPlayList = (item: PreviewItem): boolean => {
+export const isPlayList = (item: PreviewItem): boolean => {
   return 'tracks' in item
 }
 

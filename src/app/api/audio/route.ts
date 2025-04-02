@@ -16,7 +16,6 @@ export async function GET(req: NextRequest) {
   }
   const audioFilePath = path.resolve('assets', file)
   if (!isValidAudioFile(file) || !fs.existsSync(audioFilePath)) {
-    console.log('ssFile path:', audioFilePath, !fs.existsSync(audioFilePath))
     return new Response(JSON.stringify({ error: 'File not found' }), {
       status: 404,
     })

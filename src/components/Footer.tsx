@@ -52,7 +52,6 @@ const ContactForm = () => {
   const handleSendMessage = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault()
-      console.log('Data to send: ', data)
       emailjs
         .sendForm(
           process.env.NEXT_PUBLIC_SERVICE_ID!,
@@ -65,8 +64,7 @@ const ContactForm = () => {
             alert('Message Sent, I will get back to you shortly :)!')
           },
           (error) => {
-            alert('An error occurred, Please try again!')
-            console.log(error)
+            alert('An error occurred, Please try again!' + error)
           },
         )
     },

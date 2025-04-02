@@ -120,7 +120,6 @@ const PlayerContext = createContext<PlayerContextProps | null>(null)
 const CACHE_KEY = 'rss_cache'
 
 const parseRSS = async (): Promise<PlayList> => {
-  console.log('fetching rss')
   const feed = await fetch('http://localhost:3000/api/rss', {
     cache: 'no-store',
   })
@@ -225,18 +224,19 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'SET_PLAYLIST', playlist })
     dispatch({ type: 'SET_SHOW_PLAYER', show: true })
     dispatch({ type: 'SET_CURRENT_TRACK', trackId })
-    dispatch({
-      type: 'SET_TRACK_INDEX',
-      index: playlist.tracks.findIndex((t) => t.id === trackId),
-    })
   }
 
   const setTrackIndex = (index: number) =>
     dispatch({ type: 'SET_TRACK_INDEX', index })
   const setShowPlayer = (show: boolean) =>
     dispatch({ type: 'SET_SHOW_PLAYER', show })
-  const setCurrentTrackId = (trackId: number) =>
+  const setCurrentTrackId = (trackId: number) => {
+    dispatch({
+      type: 'SET_TRACK_INDEX',
+      index: state.playlist.tracks.findIndex((t) => t.id === trackId),
+    })
     dispatch({ type: 'SET_CURRENT_TRACK', trackId })
+  }
   const nextTrack = () => {
     dispatch({ type: 'NEXT_TRACK' })
   }

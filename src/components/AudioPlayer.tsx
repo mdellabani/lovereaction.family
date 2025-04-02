@@ -37,8 +37,6 @@ const AudioPlayer = () => {
   const [isSeeking, setIsSeeking] = useState(false)
   const currentTrack = playlist?.tracks[trackIndex]
   const image = playlist?.imageUrl || currentTrack?.imageUrl
-  console.log(playlist)
-  console.log(trackIndex)
   return (
     <div className="flex w-full items-center justify-center bg-gray-100 px-6 py-3 shadow-lg">
       <div className="flex items-center space-x-4">
@@ -140,7 +138,6 @@ const AudioPlayer = () => {
         onDuration={(duration) => setDuration(duration)}
         onEnded={nextTrack}
         onProgress={({ played }) => {
-          console.log('progress')
           if (!isSeeking) setPlayed(played)
         }}
         onSeek={(played) => setDuration(played)}
