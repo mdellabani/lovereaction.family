@@ -1,6 +1,6 @@
 'use client'
 import { ALL_PODCASTS, orderedTracks } from '@/components/data'
-import { PlayList, TrackInfo } from '@/types/audio'
+import { Category, PlayList, TrackInfo } from '@/types/audio'
 import {
   ReactNode,
   createContext,
@@ -133,23 +133,19 @@ const parseRSS = async (): Promise<PlayList> => {
   let trackIdCounter = 0
 
   feed.items.forEach((item) => {
-    const title = item.title
-    let artist
+    const title: string = item.title
+    if (!title.includes(Podcast.LRCool) && !title.includes(Podcast.Podcastel)) {
+      return
+    }
+    const isPodcastel = title.includes(Podcast.Podcastel)
+    let type = Category.LR
     let order = 0
-    let type
-
-    if (title.startsWith(Podcast.LRCool)) {
-      const content = title.split('_ ')
-      artist = content[1]
+    const separator = title.split(' ')
+    const content = title.split(isPodcastel ? separator[2] : separator[1])
+    const artist = content[1]
+    if (orderedTracks.has(content[0].trim())) {
       order = orderedTracks.get(content[0].trim()).order
       type = orderedTracks.get(content[0].trim()).type
-    } else if (title.startsWith(Podcast.Podcastel)) {
-      const content = title.split('- ')
-      order = orderedTracks.get(content[0].trim()).order
-      type = orderedTracks.get(content[0].trim()).type
-      artist = content[1]
-    } else {
-      throw new Error('Unknow track type')
     }
 
     const track: TrackInfo = {
@@ -223,7 +219,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const loadPlaylist = (playlist: PlayList, trackId: number) => {
     dispatch({ type: 'SET_PLAYLIST', playlist })
     dispatch({ type: 'SET_SHOW_PLAYER', show: true })
-    dispatch({ type: 'SET_CURRENT_TRACK', trackId })
+    setCurrentTrackId(trackId)
   }
 
   const setTrackIndex = (index: number) =>

@@ -48,7 +48,7 @@ const PreviewList = <T extends PreviewItem>({
     }
   }
   return (
-    <div className="relative m-10 flex  w-1/2 items-center gap-4 border-b-4 border-l-4 border-gray-300 p-4 before:absolute before:left-0 before:top-0 before:w-1/4 before:border-t-4 before:border-gray-300">
+    <div className="relative m-10 flex w-full items-center gap-4 border-b-4 border-l-4 border-gray-300 p-4 before:absolute before:left-0 before:top-0 before:w-1/4 before:border-t-4 before:border-gray-300">
       <div>
         <h2 className="mb-4 pl-2 text-xl font-bold">{title}</h2>
         {loading ? (

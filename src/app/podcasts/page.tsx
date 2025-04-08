@@ -65,7 +65,7 @@ export default function Podcasts() {
   }
 
   return (
-    <div className="mx-auto flex w-1/2 flex-col items-center gap-4 p-4">
+    <div className="mx-auto flex flex-col items-center gap-4 p-4">
       {currentTrack && <PreviewDetails track={currentTrack} />}
       <Tabs
         variant="underlined"

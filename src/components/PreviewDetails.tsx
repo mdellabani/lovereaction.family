@@ -10,7 +10,6 @@ const PreviewDetails = ({ track }: { track: PreviewItem }) => {
   const [currentTrack, setCurrentTrack] = useState<TrackInfo | null>(null)
 
   const handlePlayPause = (track: TrackInfo) => {
-    console.log(track)
     if (track === currentTrack) {
       togglePlay()
     } else {
@@ -21,7 +20,7 @@ const PreviewDetails = ({ track }: { track: PreviewItem }) => {
 
   return (
     <div className="flex w-full gap-4 rounded-lg border p-4 shadow-md">
-      <div className="flex w-1/4 flex-col items-center text-center">
+      <div className="flex w-1/4 flex-col items-center justify-center text-center">
         <Image
           alt={track.title}
           className="self-center rounded-lg"

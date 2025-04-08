@@ -1,11 +1,11 @@
 import Footer from '@/components/Footer'
-import Header from '@/components/Header'
 import PlayerContainer from '@/components/PlayerContainer'
+import ThemedHeader from '@/components/ThemedHeader'
 import { PlayerProvider } from '@/context/PlayerContext'
-import { Inter } from 'next/font/google'
-import { ThemeProvider as NextThemesProvider } from 'next-themes'
-import './globals.css'
 import { HeroUIProvider } from '@heroui/react'
+import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import { Inter } from 'next/font/google'
+import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,11 +25,17 @@ export default function RootLayout({
             enableSystem
           >
             <PlayerProvider>
-              <div className="m-20 flex h-screen flex-col gap-20">
-                <Header />
-                {children}
-                <PlayerContainer />
-                <Footer />
+              <ThemedHeader />
+              <div className="grid min-h-screen grid-cols-[1fr_minmax(800px,_1fr)_1fr] bg-gray-200">
+                <div className="bg-gray-150"></div>
+                <div className="bg-white p-28">
+                  <div className="flex h-full flex-col gap-20">
+                    {children}
+                    <PlayerContainer />
+                    <Footer />
+                  </div>
+                </div>
+                <div className="bg-gray-150"></div>
               </div>
             </PlayerProvider>
           </NextThemesProvider>
