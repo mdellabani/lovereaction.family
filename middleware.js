@@ -1,24 +1,35 @@
-import httpAuth from 'http-auth'
+// middleware.js
 import { NextResponse } from 'next/server'
 
-const basic = httpAuth.basic(
-  {
-    realm: 'Restricted',
-  },
-  (password, callback) => {
-    const expectedPassword = process.env.AUTH_PASSWORD
-
-    // Validate the password
-    callback(password === expectedPassword)
-  },
-)
-
 export function middleware(req) {
-  const { authorization } = req.headers
+  const password = process.env.PASSWORD
 
-  if (!authorization || !basic.check(req)) {
-    return new Response('Unauthorized', { status: 401 })
+  const authHeader = req.headers.get('authorization')
+  if (!authHeader) {
+    return new NextResponse('Authentication required', {
+      status: 401,
+      headers: {
+        'WWW-Authenticate': 'Basic realm="Password Protected"',
+      },
+    })
+  }
+
+  const encoded = authHeader.split(' ')[1]
+  const decoded = Buffer.from(encoded, 'base64').toString()
+  const [, pass] = decoded.split(':')
+
+  if (pass !== password) {
+    return new NextResponse('Authentication required', {
+      status: 401,
+      headers: {
+        'WWW-Authenticate': 'Basic realm="Password Protected"',
+      },
+    })
   }
 
   return NextResponse.next()
+}
+
+export const config = {
+  matcher: ['/'],
 }
