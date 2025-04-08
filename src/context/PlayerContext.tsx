@@ -120,7 +120,7 @@ const PlayerContext = createContext<PlayerContextProps | null>(null)
 const CACHE_KEY = 'rss_cache'
 
 const parseRSS = async (): Promise<PlayList> => {
-  const feed = await fetch('http://localhost:3000/api/rss', {
+  const feed = await fetch('api/rss', {
     cache: 'no-store',
   })
     .then((res) => res.json())
