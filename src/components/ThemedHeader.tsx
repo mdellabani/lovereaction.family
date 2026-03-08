@@ -24,8 +24,8 @@ const ThemedHeader = () => {
         />
 
         {/* Banner images + nav in a flex row, centered */}
-        <div className="relative z-10 flex h-full items-center justify-center">
-          {/* Left banner: logo ends up ~130px left of nav */}
+        <div className="relative z-10 mx-auto flex h-full w-fit items-center justify-center bg-gradient-to-r from-purple-400/60 via-red-300/50 via-yellow-200/50 to-green-300/60 backdrop-blur-md">
+          {/* Left banner */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             alt=""
@@ -34,7 +34,7 @@ const ThemedHeader = () => {
           />
           {/* Nav floats between the two banners */}
           <Header />
-          {/* Right banner: logo ends up ~130px right of nav */}
+          {/* Right banner */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             alt=""

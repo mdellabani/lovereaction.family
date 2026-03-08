@@ -44,13 +44,17 @@ const PreviewSummary = <T extends PreviewItem>({
           {isActive(item) && playing ? <Pause size={18} /> : <Play size={18} />}
         </button>
       </div>
-      <div className="p-3">
+      <div className="h-20 w-80 p-3">
         <p className="text-xs uppercase tracking-wide text-gray-400">
           {item.type}
         </p>
-        <p className="mt-1 font-semibold leading-tight">{item.title}</p>
+        <p className="mt-1 line-clamp-1 font-semibold leading-tight">
+          {item.title.includes('_') ? item.title.split('_')[0] : item.title}
+        </p>
         {item.artist && (
-          <p className="mt-0.5 text-sm text-gray-500">{item.artist}</p>
+          <p className="mt-0.5 line-clamp-1 text-sm text-gray-500">
+            {item.artist}
+          </p>
         )}
       </div>
     </div>
