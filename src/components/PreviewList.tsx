@@ -19,8 +19,15 @@ const PreviewList = <T extends PreviewItem>({
   loading,
 }: PreviewListProps<T>) => {
   const resolvedItems = items()
-  const { loadPlaylist, playlist, togglePlay, setCurrentTrackId } = usePlayer()
+  const {
+    loadPlaylist,
+    selectPlaylist,
+    playlist,
+    togglePlay,
+    setCurrentTrackId,
+  } = usePlayer()
   const [current, setCurrent] = useState(-1)
+
   const handlePlayPause = (item: T, index: number) => {
     if (item === resolvedItems[current]) {
       togglePlay()
@@ -31,6 +38,13 @@ const PreviewList = <T extends PreviewItem>({
       } else {
         setCurrentTrackId(item.id)
       }
+    }
+  }
+
+  const handleSelect = (item: T, index: number) => {
+    setCurrent(index)
+    if (isPlayList(item)) {
+      selectPlaylist(item as PlayList, 0)
     }
   }
 
@@ -47,39 +61,47 @@ const PreviewList = <T extends PreviewItem>({
       return (item as TrackInfo).id === (resolvedItems[current] as TrackInfo).id
     }
   }
+
   return (
-    <div className="relative m-10 flex w-full items-center gap-4 border-b-4 border-l-4 border-gray-300 p-4 before:absolute before:left-0 before:top-0 before:w-1/4 before:border-t-4 before:border-gray-300">
-      <div>
-        <h2 className="mb-4 pl-2 text-xl font-bold">{title}</h2>
-        {loading ? (
-          <div className="flex flex-row items-center justify-center">
-            <Spinner color="danger" labelColor="danger" />
-          </div>
-        ) : (
-          <div className="flex gap-4">
-            {resolvedItems.slice(0, 3).map((item, index) => (
-              <PreviewSummary
-                handlePlayPause={handlePlayPause}
-                index={index}
-                isActive={isActive}
-                item={item}
-                key={index}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-      {resolvedItems.length > 3 && (
-        <div className="mt-4 text-center">
-          <Link
-            className="ml-auto flex h-10 w-10 items-center justify-center rounded-full border border-gray-400 text-xl text-gray-600 transition hover:bg-gray-600 hover:text-white"
-            href={route}
-          >
-            ⋯
-          </Link>
+    <section className="w-full rounded-2xl bg-gray-50 p-6 dark:bg-gray-900/50">
+      <Link className="mb-5 inline-block" href={route}>
+        <h2 className="text-2xl font-bold tracking-tight hover:underline">
+          {title}
+        </h2>
+      </Link>
+      {loading ? (
+        <div className="flex items-center justify-center py-8">
+          <Spinner color="danger" labelColor="danger" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {resolvedItems.slice(0, 3).map((item, index) => (
+            <PreviewSummary
+              handlePlayPause={handlePlayPause}
+              index={index}
+              isActive={isActive}
+              item={item}
+              key={index}
+              route={route}
+              onSelect={handleSelect}
+            />
+          ))}
+          {resolvedItems.length > 3 && (
+            <Link
+              className="group flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 p-4 transition-colors hover:border-gray-400 hover:bg-white dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-800"
+              href={route}
+            >
+              <span className="text-3xl text-gray-300 transition-transform group-hover:scale-110 group-hover:text-gray-500">
+                ♫
+              </span>
+              <span className="text-sm font-medium text-gray-400 group-hover:text-gray-600">
+                See all
+              </span>
+            </Link>
+          )}
         </div>
       )}
-    </div>
+    </section>
   )
 }
 

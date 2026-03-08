@@ -38,6 +38,7 @@ type PlayerAction =
   | { type: 'SET_VOLUME'; payload: number }
   | { type: 'SET_PLAYED'; payload: number }
   | { type: 'SET_DURATION'; payload: number }
+  | { type: 'SELECT_TRACK'; trackId: number; index: number }
 
 const playerReducer = (
   state: PlayerState,
@@ -89,6 +90,8 @@ const playerReducer = (
       return { ...state, played: action.payload }
     case 'SET_DURATION':
       return { ...state, duration: action.payload }
+    case 'SELECT_TRACK':
+      return { ...state, trackId: action.trackId, trackIndex: action.index }
     default:
       return state
   }
@@ -107,6 +110,7 @@ interface PlayerContextProps extends PlayerState {
   setShowPlayer: (show: boolean) => void
   setCurrentTrackId: (trackId: number) => void
   loadPlaylist: (playlist: PlayList, trackId: number) => void
+  selectPlaylist: (playlist: PlayList, trackId: number) => void
   togglePlay: () => void
   toggleLoop: () => void
   toggleMute: () => void
@@ -120,9 +124,7 @@ const PlayerContext = createContext<PlayerContextProps | null>(null)
 const CACHE_KEY = 'rss_cache'
 
 const parseRSS = async (): Promise<PlayList> => {
-  const feed = await fetch('api/rss', {
-    cache: 'no-store',
-  })
+  const feed = await fetch('api/rss')
     .then((res) => res.json())
     .catch((error) => {
       throw new Error('Unable to fetch RSS', error)
@@ -165,15 +167,16 @@ const parseRSS = async (): Promise<PlayList> => {
   return { title: ALL_PODCASTS, tracks: tracks }
 }
 
+const CACHE_TTL = 24 * 60 * 60 * 1000 // 24 hours
+
 const loadCachedPlaylists = (): PlayList | null => {
   const cached = localStorage.getItem(CACHE_KEY)
   if (!cached) return null
 
   const { podcasts, timestamp } = JSON.parse(cached)
-  const now = new Date().getTime()
-  const lastCacheTime = new Date(timestamp).setUTCHours(7, 0, 0, 0)
+  const age = Date.now() - timestamp
 
-  return now < lastCacheTime ? podcasts : null
+  return age < CACHE_TTL ? podcasts : null
 }
 
 const cachePlaylists = (podcasts: PlayList) => {
@@ -222,6 +225,17 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     setCurrentTrackId(trackId)
   }
 
+  const selectPlaylist = (playlist: PlayList, trackId: number) => {
+    dispatch({ type: 'SET_PLAYLIST', playlist })
+    dispatch({ type: 'SET_SHOW_PLAYER', show: true })
+    const index = playlist.tracks.findIndex((t) => t.id === trackId)
+    dispatch({
+      type: 'SELECT_TRACK',
+      trackId,
+      index: index !== -1 ? index : 0,
+    })
+  }
+
   const setTrackIndex = (index: number) =>
     dispatch({ type: 'SET_TRACK_INDEX', index })
   const setShowPlayer = (show: boolean) =>
@@ -254,6 +268,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         ...state,
         podcasts,
         loadPlaylist,
+        selectPlaylist,
         setTrackIndex,
         setShowPlayer,
         setCurrentTrackId,

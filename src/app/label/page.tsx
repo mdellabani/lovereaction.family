@@ -4,23 +4,37 @@ import PreviewDetails from '@/components/PreviewDetails'
 import PreviewSummary from '@/components/PreviewSummary'
 import { usePlayer } from '@/context/PlayerContext'
 import { PlayList, PreviewItem } from '@/types/audio'
-import { Tabs, Tab } from '@heroui/tabs'
+import { Tab, Tabs } from '@heroui/tabs'
 import { useEffect, useState } from 'react'
 
 export default function Label() {
-  const { togglePlay, loadPlaylist, playlist } = usePlayer()
+  const { togglePlay, loadPlaylist, selectPlaylist, playlist } = usePlayer()
   const [currentPlaylist, setCurrentPlaylist] = useState<PlayList | null>(null)
   const [filteredReleases, setFilteredReleases] = useState<PlayList[]>(releases)
-
   const [categoryFilter, setCategoryFilter] = useState('All')
 
-  const handlePlayPause = (playlist: PlayList) => {
-    setCurrentPlaylist(playlist)
-    if (playlist === currentPlaylist) {
+  // Sync from context (e.g. when navigating from home page with a pre-selected item)
+  useEffect(() => {
+    if (!currentPlaylist && playlist.tracks.length > 0) {
+      const match = releases.find((r) => r === playlist)
+      if (match) {
+        setCurrentPlaylist(match)
+      }
+    }
+  }, [playlist])
+
+  const handlePlayPause = (item: PlayList) => {
+    setCurrentPlaylist(item)
+    if (item === currentPlaylist) {
       togglePlay()
     } else {
-      loadPlaylist(playlist, 0)
+      loadPlaylist(item, 0)
     }
+  }
+
+  const handleSelect = (item: PlayList) => {
+    setCurrentPlaylist(item)
+    selectPlaylist(item, 0)
   }
 
   const filterReleases = () => {
@@ -58,7 +72,7 @@ export default function Label() {
           <Tab key={type} title={type} />
         ))}
       </Tabs>
-      <div className="grid grid-cols-3 gap-16">
+      <div className="grid grid-cols-3 gap-6">
         {filteredReleases.map((item, index) => (
           <PreviewSummary
             handlePlayPause={handlePlayPause}
@@ -66,6 +80,7 @@ export default function Label() {
             isActive={isActive}
             item={item}
             key={index}
+            onSelect={handleSelect}
           />
         ))}
       </div>
