@@ -2,27 +2,11 @@
 import Footer from '@/components/Footer'
 import PlayerContainer from '@/components/PlayerContainer'
 import ThemedHeader from '@/components/ThemedHeader'
-import { PlayerProvider, usePlayer } from '@/context/PlayerContext'
+import { PlayerProvider } from '@/context/PlayerContext'
 import { HeroUIProvider } from '@heroui/react'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
-import { useEffect, useRef, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 import PasswordProtection from '@/components/PasswordProtection'
-
-function RouteClearPlaylist() {
-  const pathname = usePathname()
-  const { clearPlaylist } = usePlayer()
-  const prevPath = useRef(pathname)
-
-  useEffect(() => {
-    if (prevPath.current !== pathname) {
-      clearPlaylist()
-      prevPath.current = pathname
-    }
-  }, [pathname, clearPlaylist])
-
-  return null
-}
 
 export default function ClientLayout({
   children,
@@ -40,12 +24,11 @@ export default function ClientLayout({
         enableSystem
       >
         <PlayerProvider>
-          <RouteClearPlaylist />
           <PasswordProtection setAuthenticated={setIsAuthenticated} />
           {isAuthenticated && (
             <>
               <ThemedHeader />
-              <div className="mx-auto min-h-screen max-w-3xl px-4 pt-16 sm:px-8 md:px-16">
+              <div className="mx-auto min-h-screen max-w-3xl px-4 pt-20 sm:px-8 md:px-16">
                 <div className="flex h-full flex-col gap-10 md:gap-20">
                   {children}
                   <PlayerContainer />

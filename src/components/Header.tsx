@@ -30,7 +30,7 @@ const Header = () => {
           maxWidth="full"
           position="static"
           shouldHideOnScroll={false}
-          style={{ backgroundColor: 'transparent', height: '48px' }}
+          style={{ backgroundColor: 'transparent', height: '64px' }}
           onMenuOpenChange={setIsMenuOpen}
         >
           <NavbarContent justify="start">

@@ -39,7 +39,6 @@ type PlayerAction =
   | { type: 'SET_PLAYED'; payload: number }
   | { type: 'SET_DURATION'; payload: number }
   | { type: 'SELECT_TRACK'; trackId: number; index: number }
-  | { type: 'CLEAR_PLAYLIST' }
 
 const playerReducer = (
   state: PlayerState,
@@ -56,9 +55,17 @@ const playerReducer = (
         trackIndex: newIndex !== -1 ? newIndex : 0,
       }
     }
-    case 'SET_CURRENT_TRACK':
-      //todo-mde set trackIndex
-      return { ...state, playing: true, trackId: action.trackId }
+    case 'SET_CURRENT_TRACK': {
+      const idx = state.playlist.tracks.findIndex(
+        (t) => t.id === action.trackId,
+      )
+      return {
+        ...state,
+        playing: true,
+        trackId: action.trackId,
+        trackIndex: idx !== -1 ? idx : state.trackIndex,
+      }
+    }
     case 'SET_TRACK_INDEX':
       return { ...state, playing: true, trackIndex: action.index }
     case 'SET_SHOW_PLAYER':
@@ -93,17 +100,6 @@ const playerReducer = (
       return { ...state, duration: action.payload }
     case 'SELECT_TRACK':
       return { ...state, trackId: action.trackId, trackIndex: action.index }
-    case 'CLEAR_PLAYLIST':
-      return {
-        ...state,
-        playlist: { title: '', tracks: [] },
-        trackId: 0,
-        trackIndex: 0,
-        showPlayer: false,
-        playing: false,
-        played: 0,
-        duration: 0,
-      }
     default:
       return state
   }
@@ -123,7 +119,6 @@ interface PlayerContextProps extends PlayerState {
   setCurrentTrackId: (trackId: number) => void
   loadPlaylist: (playlist: PlayList, trackId: number) => void
   selectPlaylist: (playlist: PlayList, trackId: number) => void
-  clearPlaylist: () => void
   togglePlay: () => void
   toggleLoop: () => void
   toggleMute: () => void
@@ -235,12 +230,12 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const loadPlaylist = (playlist: PlayList, trackId: number) => {
     dispatch({ type: 'SET_PLAYLIST', playlist })
     dispatch({ type: 'SET_SHOW_PLAYER', show: true })
-    setCurrentTrackId(trackId)
+    const index = playlist.tracks.findIndex((t) => t.id === trackId)
+    dispatch({ type: 'SET_TRACK_INDEX', index: index !== -1 ? index : 0 })
   }
 
   const selectPlaylist = (playlist: PlayList, trackId: number) => {
     dispatch({ type: 'SET_PLAYLIST', playlist })
-    dispatch({ type: 'SET_SHOW_PLAYER', show: true })
     const index = playlist.tracks.findIndex((t) => t.id === trackId)
     dispatch({
       type: 'SELECT_TRACK',
@@ -254,11 +249,8 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const setShowPlayer = (show: boolean) =>
     dispatch({ type: 'SET_SHOW_PLAYER', show })
   const setCurrentTrackId = (trackId: number) => {
-    dispatch({
-      type: 'SET_TRACK_INDEX',
-      index: state.playlist.tracks.findIndex((t) => t.id === trackId),
-    })
     dispatch({ type: 'SET_CURRENT_TRACK', trackId })
+    dispatch({ type: 'SET_SHOW_PLAYER', show: true })
   }
   const nextTrack = () => {
     dispatch({ type: 'NEXT_TRACK' })
@@ -266,7 +258,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const previousTrack = () => {
     dispatch({ type: 'PREV_TRACK' })
   }
-  const clearPlaylist = () => dispatch({ type: 'CLEAR_PLAYLIST' })
   const togglePlay = () => dispatch({ type: 'TOGGLE_PLAY' })
   const toggleLoop = () => dispatch({ type: 'TOGGLE_LOOP' })
   const toggleMute = () => dispatch({ type: 'TOGGLE_MUTE' })
@@ -283,7 +274,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         podcasts,
         loadPlaylist,
         selectPlaylist,
-        clearPlaylist,
         setTrackIndex,
         setShowPlayer,
         setCurrentTrackId,

@@ -3,7 +3,7 @@ import Header from './Header'
 const ThemedHeader = () => {
   return (
     <div className="fixed z-50 w-full">
-      <div className="relative h-12 w-full overflow-hidden border-b border-gray-300 dark:border-gray-700">
+      <div className="relative h-16 w-full overflow-hidden border-b border-gray-300 dark:border-gray-700">
         {/* Zigzag fills behind everything */}
         <div
           className="absolute inset-y-0 left-0 hidden w-1/2 sm:block"

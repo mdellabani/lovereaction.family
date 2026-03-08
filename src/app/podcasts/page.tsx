@@ -10,11 +10,22 @@ import { Tab, Tabs } from '@heroui/tabs'
 import { useEffect, useState } from 'react'
 
 export default function Podcasts() {
-  const { togglePlay, loadPlaylist, loading, playlist, podcasts } = usePlayer()
+  const { togglePlay, loadPlaylist, loading, playlist, podcasts, trackIndex } =
+    usePlayer()
   const [currentTrack, setCurrentTrack] = useState<TrackInfo | null>(null)
   const [filteredPlaylist, setfilteredPlaylist] = useState<PlayList>(podcasts)
   const [podcastFilter, setPodcastFilter] = useState('All')
   const [categoryFilter, setCategoryFilter] = useState('All')
+
+  // Sync from context (e.g. when navigating from home page with a pre-selected item)
+  useEffect(() => {
+    if (!currentTrack && playlist.tracks.length > 0) {
+      const track = playlist.tracks[trackIndex]
+      if (track && podcasts.tracks.some((t) => t.id === track.id)) {
+        setCurrentTrack(track)
+      }
+    }
+  }, [playlist, trackIndex])
 
   const handlePlayPause = (track: TrackInfo) => {
     setCurrentTrack(track)
