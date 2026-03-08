@@ -39,6 +39,7 @@ type PlayerAction =
   | { type: 'SET_PLAYED'; payload: number }
   | { type: 'SET_DURATION'; payload: number }
   | { type: 'SELECT_TRACK'; trackId: number; index: number }
+  | { type: 'CLEAR_PLAYLIST' }
 
 const playerReducer = (
   state: PlayerState,
@@ -92,6 +93,17 @@ const playerReducer = (
       return { ...state, duration: action.payload }
     case 'SELECT_TRACK':
       return { ...state, trackId: action.trackId, trackIndex: action.index }
+    case 'CLEAR_PLAYLIST':
+      return {
+        ...state,
+        playlist: { title: '', tracks: [] },
+        trackId: 0,
+        trackIndex: 0,
+        showPlayer: false,
+        playing: false,
+        played: 0,
+        duration: 0,
+      }
     default:
       return state
   }
@@ -111,6 +123,7 @@ interface PlayerContextProps extends PlayerState {
   setCurrentTrackId: (trackId: number) => void
   loadPlaylist: (playlist: PlayList, trackId: number) => void
   selectPlaylist: (playlist: PlayList, trackId: number) => void
+  clearPlaylist: () => void
   togglePlay: () => void
   toggleLoop: () => void
   toggleMute: () => void
@@ -253,6 +266,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const previousTrack = () => {
     dispatch({ type: 'PREV_TRACK' })
   }
+  const clearPlaylist = () => dispatch({ type: 'CLEAR_PLAYLIST' })
   const togglePlay = () => dispatch({ type: 'TOGGLE_PLAY' })
   const toggleLoop = () => dispatch({ type: 'TOGGLE_LOOP' })
   const toggleMute = () => dispatch({ type: 'TOGGLE_MUTE' })
@@ -269,6 +283,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         podcasts,
         loadPlaylist,
         selectPlaylist,
+        clearPlaylist,
         setTrackIndex,
         setShowPlayer,
         setCurrentTrackId,
