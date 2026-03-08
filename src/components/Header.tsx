@@ -37,12 +37,18 @@ const Header = () => {
             <NavbarMenuToggle
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             />
-            <Link href="/">
-              <Image alt="Logo" height={32} src={imageSrc} width={32} />
-            </Link>
           </NavbarContent>
 
           <NavbarMenu>
+            <NavbarItem>
+              <Link
+                className="text-sm uppercase tracking-wide text-black hover:text-gray-500 dark:text-white"
+                href="/"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Home
+              </Link>
+            </NavbarItem>
             {sections.map((section) => (
               <NavbarItem key={section.route}>
                 <Link
@@ -61,7 +67,13 @@ const Header = () => {
       {/* Desktop: logo + nav + logo in a subtle bar */}
       <nav className="hidden h-full items-center gap-5 px-6 sm:flex">
         <Link className="shrink-0" href="/">
-          <Image alt="Logo" height={32} src={imageSrc} width={32} />
+          <Image
+            alt="Logo"
+            height={36}
+            quality={100}
+            src={imageSrc}
+            width={36}
+          />
         </Link>
         {sections.map((section) => (
           <Link

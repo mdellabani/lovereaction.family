@@ -23,24 +23,39 @@ const ThemedHeader = () => {
           }}
         />
 
-        {/* Banner images + nav in a flex row, centered */}
-        <div className="relative z-10 mx-auto flex h-full w-fit items-center justify-center bg-gradient-to-r from-purple-400/60 via-red-300/50 via-yellow-200/50 to-green-300/60 backdrop-blur-md">
-          {/* Left banner */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt=""
-            className="hidden h-full shrink-0 sm:block"
-            src="/banner.png"
+        {/* Mobile: centered banner, zigzag fills left and right */}
+        <div className="relative z-10 flex h-full w-full items-center justify-center sm:hidden">
+          <div
+            className="absolute inset-y-0 left-0 w-1/2"
+            style={{
+              backgroundImage: "url('/zigzag-left.png')",
+              backgroundRepeat: 'repeat-x',
+              backgroundSize: 'auto 100%',
+            }}
           />
-          {/* Nav floats between the two banners */}
+          <div
+            className="absolute inset-y-0 right-0 w-1/2"
+            style={{
+              backgroundImage: "url('/zigzag-right.png')",
+              backgroundRepeat: 'repeat-x',
+              backgroundSize: 'auto 100%',
+              backgroundPosition: 'right center',
+            }}
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt="" className="relative z-10 h-full" src="/banner.png" />
+          <div className="absolute inset-0 z-20">
+            <Header />
+          </div>
+        </div>
+
+        {/* Desktop: banner + nav + banner with gradient */}
+        <div className="relative z-10 mx-auto hidden h-full w-fit items-center justify-center bg-gradient-to-r from-purple-400/60 via-red-300/50 via-yellow-200/50 to-green-300/60 backdrop-blur-md sm:flex">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt="" className="h-full shrink-0" src="/banner.png" />
           <Header />
-          {/* Right banner */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt=""
-            className="hidden h-full shrink-0 sm:block"
-            src="/banner.png"
-          />
+          <img alt="" className="h-full shrink-0" src="/banner.png" />
         </div>
       </div>
     </div>
