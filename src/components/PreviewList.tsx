@@ -2,6 +2,7 @@ import { usePlayer } from '@/context/PlayerContext'
 import { PlayList, PreviewItem, TrackInfo } from '@/types/audio'
 import { Spinner } from '@heroui/spinner'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import PreviewSummary from './PreviewSummary'
 
@@ -19,13 +20,8 @@ const PreviewList = <T extends PreviewItem>({
   loading,
 }: PreviewListProps<T>) => {
   const resolvedItems = items()
-  const {
-    loadPlaylist,
-    selectPlaylist,
-    playlist,
-    togglePlay,
-    setCurrentTrackId,
-  } = usePlayer()
+  const { loadPlaylist, playlist, togglePlay, setCurrentTrackId } = usePlayer()
+  const router = useRouter()
   const [current, setCurrent] = useState(-1)
 
   const handlePlayPause = (item: T, index: number) => {
@@ -43,8 +39,11 @@ const PreviewList = <T extends PreviewItem>({
 
   const handleSelect = (item: T, index: number) => {
     setCurrent(index)
+    // Navigate with selection hint via query param — don't touch player state
     if (isPlayList(item)) {
-      selectPlaylist(item as PlayList, 0)
+      router.push(`${route}?select=${item.title}`)
+    } else {
+      router.push(`${route}?select=${(item as TrackInfo).id}`)
     }
   }
 

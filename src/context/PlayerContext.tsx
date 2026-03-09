@@ -38,7 +38,6 @@ type PlayerAction =
   | { type: 'SET_VOLUME'; payload: number }
   | { type: 'SET_PLAYED'; payload: number }
   | { type: 'SET_DURATION'; payload: number }
-  | { type: 'SELECT_TRACK'; trackId: number; index: number }
 
 const playerReducer = (
   state: PlayerState,
@@ -98,8 +97,6 @@ const playerReducer = (
       return { ...state, played: action.payload }
     case 'SET_DURATION':
       return { ...state, duration: action.payload }
-    case 'SELECT_TRACK':
-      return { ...state, trackId: action.trackId, trackIndex: action.index }
     default:
       return state
   }
@@ -118,7 +115,6 @@ interface PlayerContextProps extends PlayerState {
   setShowPlayer: (show: boolean) => void
   setCurrentTrackId: (trackId: number) => void
   loadPlaylist: (playlist: PlayList, trackId: number) => void
-  selectPlaylist: (playlist: PlayList, trackId: number) => void
   togglePlay: () => void
   toggleLoop: () => void
   toggleMute: () => void
@@ -234,16 +230,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'SET_TRACK_INDEX', index: index !== -1 ? index : 0 })
   }
 
-  const selectPlaylist = (playlist: PlayList, trackId: number) => {
-    dispatch({ type: 'SET_PLAYLIST', playlist })
-    const index = playlist.tracks.findIndex((t) => t.id === trackId)
-    dispatch({
-      type: 'SELECT_TRACK',
-      trackId,
-      index: index !== -1 ? index : 0,
-    })
-  }
-
   const setTrackIndex = (index: number) =>
     dispatch({ type: 'SET_TRACK_INDEX', index })
   const setShowPlayer = (show: boolean) =>
@@ -273,7 +259,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         ...state,
         podcasts,
         loadPlaylist,
-        selectPlaylist,
         setTrackIndex,
         setShowPlayer,
         setCurrentTrackId,

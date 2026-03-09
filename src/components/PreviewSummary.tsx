@@ -62,7 +62,15 @@ const PreviewSummary = <T extends PreviewItem>({
 
   if (route) {
     return (
-      <Link href={route} onClick={() => onSelect?.(item, index)}>
+      <Link
+        href={route}
+        onClick={(e) => {
+          if (onSelect) {
+            e.preventDefault()
+            onSelect(item, index)
+          }
+        }}
+      >
         {card}
       </Link>
     )

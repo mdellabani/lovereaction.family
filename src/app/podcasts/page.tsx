@@ -7,25 +7,28 @@ import { usePlayer } from '@/context/PlayerContext'
 import { PlayList, TrackInfo } from '@/types/audio'
 import { Spinner } from '@heroui/spinner'
 import { Tab, Tabs } from '@heroui/tabs'
+import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function Podcasts() {
-  const { togglePlay, loadPlaylist, loading, playlist, podcasts, trackIndex } =
-    usePlayer()
+  const { togglePlay, loadPlaylist, loading, podcasts } = usePlayer()
+  const searchParams = useSearchParams()
   const [currentTrack, setCurrentTrack] = useState<TrackInfo | null>(null)
   const [filteredPlaylist, setfilteredPlaylist] = useState<PlayList>(podcasts)
   const [podcastFilter, setPodcastFilter] = useState('All')
   const [categoryFilter, setCategoryFilter] = useState('All')
 
-  // Sync from context (e.g. when navigating from home page with a pre-selected item)
+  // Sync from URL query param (e.g. navigating from home page with a pre-selected item)
   useEffect(() => {
-    if (!currentTrack && playlist.tracks.length > 0) {
-      const track = playlist.tracks[trackIndex]
-      if (track && podcasts.tracks.some((t) => t.id === track.id)) {
-        setCurrentTrack(track)
+    const selectParam = searchParams.get('select')
+    if (selectParam && !currentTrack) {
+      const trackId = parseInt(selectParam, 10)
+      const match = podcasts.tracks.find((t) => t.id === trackId)
+      if (match) {
+        setCurrentTrack(match)
       }
     }
-  }, [playlist, trackIndex])
+  }, [searchParams, podcasts])
 
   const handlePlayPause = (track: TrackInfo) => {
     setCurrentTrack(track)
@@ -37,7 +40,11 @@ export default function Podcasts() {
   }
 
   const matchesFilter = (): boolean => {
-    if (playlist.title?.includes('-' + podcastFilter + '-' + categoryFilter)) {
+    if (
+      filteredPlaylist.title?.includes(
+        '-' + podcastFilter + '-' + categoryFilter,
+      )
+    ) {
       return true
     }
     return false

@@ -5,23 +5,26 @@ import PreviewSummary from '@/components/PreviewSummary'
 import { usePlayer } from '@/context/PlayerContext'
 import { PlayList, PreviewItem } from '@/types/audio'
 import { Tab, Tabs } from '@heroui/tabs'
+import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function Label() {
-  const { togglePlay, loadPlaylist, selectPlaylist, playlist } = usePlayer()
+  const { togglePlay, loadPlaylist, playlist } = usePlayer()
+  const searchParams = useSearchParams()
   const [currentPlaylist, setCurrentPlaylist] = useState<PlayList | null>(null)
   const [filteredReleases, setFilteredReleases] = useState<PlayList[]>(releases)
   const [categoryFilter, setCategoryFilter] = useState('All')
 
-  // Sync from context (e.g. when navigating from home page with a pre-selected item)
+  // Sync from URL query param (e.g. navigating from home page with a pre-selected item)
   useEffect(() => {
-    if (!currentPlaylist && playlist.tracks.length > 0) {
-      const match = releases.find((r) => r === playlist)
+    const selectParam = searchParams.get('select')
+    if (selectParam && !currentPlaylist) {
+      const match = releases.find((r) => r.title === selectParam)
       if (match) {
         setCurrentPlaylist(match)
       }
     }
-  }, [playlist])
+  }, [searchParams])
 
   const handlePlayPause = (item: PlayList) => {
     setCurrentPlaylist(item)
@@ -34,7 +37,6 @@ export default function Label() {
 
   const handleSelect = (item: PlayList) => {
     setCurrentPlaylist(item)
-    selectPlaylist(item, 0)
   }
 
   const filterReleases = () => {
