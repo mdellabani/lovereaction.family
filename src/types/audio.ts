@@ -7,6 +7,7 @@ export enum Category {
 export interface PreviewItem {
   title?: string
   artist?: string
+  description?: string
   type?: Category
   imageUrl?: string
 }
@@ -18,8 +19,20 @@ export interface TrackInfo extends PreviewItem {
   url: string
 }
 
+export interface ShopItem {
+  name: string
+  format: string
+  price: number
+  currency: string
+  images?: string[]
+  soldOut?: boolean
+  nameYourPrice?: boolean
+}
+
 export interface PlayList extends PreviewItem {
+  images?: string[]
   tracks: TrackInfo[]
+  shopItems?: ShopItem[]
 }
 
 export interface RSSPodcast {
