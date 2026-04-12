@@ -2,8 +2,8 @@ import { Category, PlayList, RSSPodcast } from '@/types/audio'
 
 export const releases: PlayList[] = [
   {
-    title: 'ZONE-001',
-    artist: 'ORA',
+    title: 'ZONE#001',
+    artist: 'ORA - New Land',
     type: Category.ZONE,
     imageUrl: '/Zone-001.jpg',
     tracks: [
@@ -12,7 +12,7 @@ export const releases: PlayList[] = [
         order: 1,
         title: 'Transient 96',
         imageUrl: '/Zone-001.jpg',
-        url: 'https://soundcloud.com/les-yeux-orange/premiere-mirlaqi-a-dream-about-you',
+        url: '/api/audio?file=Zone-001/A1.mp3',
       },
       {
         id: 1,
@@ -38,8 +38,8 @@ export const releases: PlayList[] = [
     ],
   },
   {
-    title: 'LR-001',
-    artist: 'Mirlaqi',
+    title: 'LR#001',
+    artist: 'Mirlaqi - Disco Lore',
     type: Category.LR,
     imageUrl: '/LR-001.jpg',
     tracks: [
@@ -81,8 +81,8 @@ export const releases: PlayList[] = [
     ],
   },
   {
-    title: 'Roots-001',
-    artist: 'Z.Zee',
+    title: 'ROOTS#001',
+    artist: 'Z.Zee - Save the Child in You',
     type: Category.ROOTS,
     imageUrl: '/Roots-001.jpg',
     tracks: [
