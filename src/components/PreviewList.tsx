@@ -45,7 +45,7 @@ const PreviewList = <T extends PreviewItem>({
     setCurrent(index)
     // Navigate with selection hint via query param — don't touch player state
     if (isPlayList(item)) {
-      router.push(`${route}?select=${item.title}`)
+      router.push(`${route}?select=${encodeURIComponent(item.title ?? '')}`)
     } else {
       router.push(`${route}?select=${(item as TrackInfo).id}`)
     }

@@ -89,10 +89,10 @@ export function ShopItemRow({
         )}
       </div>
       {item.images && item.images.length > 0 && (
-        <div className="flex gap-3 overflow-x-auto py-1">
+        <div className="flex gap-3 py-1">
           {item.images.map((src, idx) => (
             <button
-              className="shrink-0 cursor-zoom-in"
+              className="cursor-zoom-in"
               key={src}
               type="button"
               onClick={() => setLightboxIndex(idx)}
@@ -200,20 +200,23 @@ export function ShopItemRow({
 }
 
 const PreviewDetails = ({ track }: { track: PreviewItem }) => {
-  const { togglePlay, setCurrentTrackId } = usePlayer()
+  const { togglePlay, loadPlaylist, playlist: activePlaylist } = usePlayer()
   const [currentTrack, setCurrentTrack] = useState<TrackInfo | null>(null)
   const [galleryIndex, setGalleryIndex] = useState<number | null>(null)
 
-  const handlePlayPause = (track: TrackInfo) => {
-    if (track === currentTrack) {
+  const parentPlaylist = isPlayList(track) ? (track as PlayList) : null
+
+  const handlePlayPause = (item: PreviewItem) => {
+    const t = item as TrackInfo
+    if (t === currentTrack && activePlaylist === parentPlaylist) {
       togglePlay()
-    } else {
-      setCurrentTrackId(track.id)
-      setCurrentTrack(track)
+    } else if (parentPlaylist) {
+      loadPlaylist(parentPlaylist, t.id)
+      setCurrentTrack(t)
     }
   }
 
-  const playlist = isPlayList(track) ? (track as PlayList) : null
+  const playlist = parentPlaylist
   const galleryImages = playlist?.images
 
   return (

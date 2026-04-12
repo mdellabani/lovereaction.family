@@ -4,6 +4,7 @@ import { Category, PlayList, TrackInfo } from '@/types/audio'
 import {
   ReactNode,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useReducer,
@@ -222,6 +223,24 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
       dispatch({ type: 'SET_LOADING', loading: false })
     })()
   }, [])
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (!state.showPlayer) return
+      const tag = (e.target as HTMLElement).tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+      if (e.code === 'Space') {
+        e.preventDefault()
+        dispatch({ type: 'TOGGLE_PLAY' })
+      }
+    },
+    [state.showPlayer],
+  )
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
 
   const loadPlaylist = (playlist: PlayList, trackId: number) => {
     dispatch({ type: 'SET_PLAYLIST', playlist })

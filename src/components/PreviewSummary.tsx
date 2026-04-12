@@ -44,7 +44,7 @@ const PreviewSummary = <T extends PreviewItem>({
           {isActive(item) && playing ? <Pause size={18} /> : <Play size={18} />}
         </button>
       </div>
-      <div className="h-20 w-80 p-3">
+      <div className="h-20 w-full p-3">
         <p className="text-xs uppercase tracking-wide text-gray-400">
           {item.type}
         </p>
