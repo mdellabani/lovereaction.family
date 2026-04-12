@@ -201,7 +201,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     loading: false,
     playing: false,
     loop: false,
-    volume: 0.8,
+    volume: 0.5,
     muted: false,
     played: 0,
     duration: 0,

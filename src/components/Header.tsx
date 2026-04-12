@@ -6,15 +6,12 @@ import {
   NavbarMenu,
   NavbarMenuToggle,
 } from '@heroui/react'
-import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 
 const Header = () => {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
-  const imageSrc = isDark ? '/logo-w.png' : '/logo-b.png'
+  const imageSrc = '/logo-b.png'
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 

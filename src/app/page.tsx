@@ -18,6 +18,7 @@ const Home = () => {
       <PreviewList
         items={() => podcasts.tracks}
         loading={loading}
+        playlist={podcasts}
         route="/podcasts"
         title="Podcasts"
       />

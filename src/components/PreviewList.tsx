@@ -11,6 +11,7 @@ type PreviewListProps<T extends PreviewItem> = {
   items: () => T[]
   route: string
   loading: boolean
+  playlist?: PlayList
 }
 
 const PreviewList = <T extends PreviewItem>({
@@ -18,6 +19,7 @@ const PreviewList = <T extends PreviewItem>({
   items,
   route,
   loading,
+  playlist: parentPlaylist,
 }: PreviewListProps<T>) => {
   const resolvedItems = items()
   const { loadPlaylist, playlist, togglePlay, setCurrentTrackId } = usePlayer()
@@ -31,8 +33,10 @@ const PreviewList = <T extends PreviewItem>({
       setCurrent(index)
       if (isPlayList(item)) {
         loadPlaylist(item as PlayList, 0)
+      } else if (parentPlaylist) {
+        loadPlaylist(parentPlaylist, (item as TrackInfo).id)
       } else {
-        setCurrentTrackId(item.id)
+        setCurrentTrackId((item as TrackInfo).id)
       }
     }
   }

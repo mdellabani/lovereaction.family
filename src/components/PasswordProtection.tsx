@@ -20,7 +20,6 @@ const PasswordProtection = ({
     }
 
     const password = process.env.NEXT_PUBLIC_PASSWORD
-    console.log('zzzp', password)
     const userPassword = prompt('Enter password:')
 
     if (userPassword === password) {

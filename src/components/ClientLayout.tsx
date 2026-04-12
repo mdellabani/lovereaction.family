@@ -19,9 +19,8 @@ export default function ClientLayout({
     <HeroUIProvider>
       <NextThemesProvider
         attribute="class"
-        defaultTheme="system"
         disableTransitionOnChange
-        enableSystem
+        forcedTheme="light"
       >
         <PlayerProvider>
           <PasswordProtection setAuthenticated={setIsAuthenticated} />
