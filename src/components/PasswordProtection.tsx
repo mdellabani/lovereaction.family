@@ -12,6 +12,13 @@ const PasswordProtection = ({
   const router = useRouter()
 
   useEffect(() => {
+    const password = process.env.NEXT_PUBLIC_PASSWORD
+    if (!password) {
+      setIsAuthenticated(true)
+      setAuthenticated(true)
+      return
+    }
+
     const storedPassword = localStorage.getItem('authenticated')
     if (storedPassword === 'true') {
       setIsAuthenticated(true)
@@ -19,7 +26,6 @@ const PasswordProtection = ({
       return
     }
 
-    const password = process.env.NEXT_PUBLIC_PASSWORD
     const userPassword = prompt('Enter password:')
 
     if (userPassword === password) {
