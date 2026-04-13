@@ -1,7 +1,7 @@
 'use client'
 
 import { releases } from '@/components/data'
-import { ShopItemRow } from '@/components/PreviewDetails'
+import { ShopItemRow, ShopSupportNote } from '@/components/PreviewDetails'
 import { PlayList, ShopItem } from '@/types/audio'
 import Image from 'next/image'
 
@@ -40,6 +40,9 @@ export default function Page() {
   return (
     <div className="flex flex-col items-center gap-10 py-4">
       <p className="text-sm tracking-[0.3em] text-black/40">SHOP</p>
+      <div className="w-full max-w-lg">
+        <ShopSupportNote />
+      </div>
       <div className="grid w-full grid-cols-2 gap-6 sm:grid-cols-3">
         {cards.map((card) => {
           if (card.type === 'music') {

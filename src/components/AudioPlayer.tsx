@@ -14,7 +14,7 @@ import {
 import Image from 'next/image'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
-import { useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import QueuePanel from './QueuePanel'
 
@@ -53,8 +53,41 @@ const AudioPlayer = () => {
   const playerRef = useRef<ReactPlayer>(null)
   const [isSeeking, setIsSeeking] = useState(false)
   const [queueOpen, setQueueOpen] = useState(false)
+  const lastProgressRef = useRef(0)
+  const stallTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const currentTrack = playlist?.tracks[trackIndex]
   const image = currentTrack?.imageUrl || playlist?.imageUrl
+
+  const recoverPlayback = useCallback(() => {
+    if (!playerRef.current || !playing) return
+    const currentTime = playerRef.current.getCurrentTime()
+    playerRef.current.seekTo(currentTime, 'seconds')
+    togglePlay()
+    setTimeout(() => togglePlay(), 300)
+  }, [playing, togglePlay])
+
+  // Detect stalled playback: if playing but progress hasn't changed in 8s
+  useEffect(() => {
+    if (stallTimerRef.current) clearInterval(stallTimerRef.current)
+
+    if (playing && !isSeeking) {
+      stallTimerRef.current = setInterval(() => {
+        const current = playerRef.current?.getCurrentTime() ?? 0
+        if (
+          playing &&
+          current > 0 &&
+          Math.abs(current - lastProgressRef.current) < 0.1
+        ) {
+          recoverPlayback()
+        }
+        lastProgressRef.current = current
+      }, 8000)
+    }
+
+    return () => {
+      if (stallTimerRef.current) clearInterval(stallTimerRef.current)
+    }
+  }, [playing, isSeeking, recoverPlayback])
 
   const handlePrev = () => {
     if (played < 0.01) {
@@ -280,6 +313,9 @@ const AudioPlayer = () => {
         width="0"
         onDuration={(duration) => setDuration(duration)}
         onEnded={nextTrack}
+        onError={() => {
+          setTimeout(() => recoverPlayback(), 2000)
+        }}
         onProgress={({ played }) => {
           if (!isSeeking) setPlayed(played)
         }}

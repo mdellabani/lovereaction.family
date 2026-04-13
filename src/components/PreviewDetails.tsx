@@ -6,6 +6,21 @@ import { useRef, useState } from 'react'
 import { isPlayList } from './PreviewList'
 import TrackItem from './TrackItem'
 
+export function ShopSupportNote() {
+  return (
+    <div className="rounded-md bg-black/[0.03] px-3 py-2.5">
+      <p className="text-[11px] leading-relaxed text-black/50">
+        We are an independent label — we fund everything ourselves and make no
+        profit. The more you pay, the more it helps us keep going.
+      </p>
+      <p className="mt-1 text-[10px] text-black/35">
+        Prices do not include shipping. In some cases we can deliver hand to
+        hand.
+      </p>
+    </div>
+  )
+}
+
 export function ShopItemRow({
   item,
   release,
@@ -48,18 +63,18 @@ export function ShopItemRow({
   return (
     <div className="flex flex-col gap-2 py-2">
       <div className="flex items-center justify-between gap-4">
-        <div className="flex flex-1 flex-col">
-          <span className="text-xs font-medium text-black/70">
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="text-sm font-medium text-black/70">
             {item.format}
           </span>
-          <span className="text-[10px] text-black/40">
+          <span className="text-sm text-black/50">
             {item.soldOut ? (
               'Sold out'
             ) : item.nameYourPrice ? (
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1.5">
                 €
                 <input
-                  className="w-12 border-b border-black/20 bg-transparent text-center text-[10px] text-black/60 focus:border-black/50 focus:outline-none"
+                  className="w-20 border-b-2 border-black/20 bg-transparent py-0.5 text-center text-sm font-semibold text-black/70 focus:border-black/50 focus:outline-none"
                   min={item.price}
                   placeholder={item.price.toFixed(2)}
                   step="0.50"
@@ -67,20 +82,20 @@ export function ShopItemRow({
                   value={customPrice}
                   onChange={(e) => setCustomPrice(e.target.value)}
                 />
-                or more
+                <span className="text-xs text-black/35">or more</span>
               </span>
             ) : (
-              `€${item.price.toFixed(2)}`
+              <span className="font-semibold">€{item.price.toFixed(2)}</span>
             )}
           </span>
         </div>
         {item.soldOut ? (
-          <span className="text-[10px] tracking-[0.2em] text-black/30">
+          <span className="text-xs tracking-[0.2em] text-black/30">
             SOLD OUT
           </span>
         ) : (
           <button
-            className="text-[10px] tracking-[0.2em] text-black/40 transition-colors hover:text-black/70"
+            className="shrink-0 rounded-full border border-black/20 px-3 py-1 text-[11px] font-medium tracking-[0.15em] text-black/60 transition-colors hover:border-black/40 hover:text-black/80"
             type="button"
             onClick={() => setShowForm(!showForm)}
           >
@@ -317,16 +332,19 @@ const PreviewDetails = ({ track }: { track: PreviewItem }) => {
         </div>
       )}
       {playlist?.shopItems && playlist.shopItems.length > 0 && (
-        <div className="w-full rounded-lg border border-black/10 p-4">
-          <div className="flex flex-col divide-y divide-black/5">
-            {playlist.shopItems.map((item) => (
-              <ShopItemRow
-                item={item}
-                key={item.name}
-                release={`${track.artist} — ${track.title}`}
-              />
-            ))}
+        <div className="flex w-full flex-col gap-3">
+          <div className="rounded-lg border border-black/10 p-4">
+            <div className="flex flex-col divide-y divide-black/5">
+              {playlist.shopItems.map((item) => (
+                <ShopItemRow
+                  item={item}
+                  key={item.name}
+                  release={`${track.artist} — ${track.title}`}
+                />
+              ))}
+            </div>
           </div>
+          <ShopSupportNote />
         </div>
       )}
     </div>
