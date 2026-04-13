@@ -77,19 +77,19 @@ const PreviewList = <T extends PreviewItem>({
           <Spinner color="danger" labelColor="danger" />
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {resolvedItems.slice(0, 3).map((item, index) => (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          {resolvedItems.slice(0, 5).map((item, index) => (
             <PreviewSummary
               handlePlayPause={handlePlayPause}
               index={index}
               isActive={isActive}
               item={item}
-              key={index}
+              key={item.title ?? index}
               route={route}
               onSelect={handleSelect}
             />
           ))}
-          {resolvedItems.length > 3 && (
+          {resolvedItems.length > 5 && (
             <Link
               className="group flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 p-4 transition-colors hover:border-gray-400 hover:bg-white dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-800"
               href={route}

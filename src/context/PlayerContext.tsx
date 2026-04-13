@@ -126,7 +126,7 @@ interface PlayerContextProps extends PlayerState {
 
 const PlayerContext = createContext<PlayerContextProps | null>(null)
 
-const CACHE_KEY = 'rss_cache'
+const CACHE_KEY = 'rss_cache_v3'
 
 const parseRSS = async (): Promise<PlayList> => {
   const feed = await fetch('api/rss')
@@ -168,7 +168,7 @@ const parseRSS = async (): Promise<PlayList> => {
 
     tracks.push(track)
   })
-  tracks.sort((a, b) => a.order - b.order)
+  tracks.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title))
   return { title: ALL_PODCASTS, tracks: tracks }
 }
 

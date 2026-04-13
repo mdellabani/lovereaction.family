@@ -11,8 +11,6 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 const Header = () => {
-  const imageSrc = '/logo-b.png'
-
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
@@ -27,7 +25,7 @@ const Header = () => {
           maxWidth="full"
           position="static"
           shouldHideOnScroll={false}
-          style={{ backgroundColor: 'transparent', height: '64px' }}
+          style={{ backgroundColor: 'transparent', height: '40px' }}
           onMenuOpenChange={setIsMenuOpen}
         >
           <NavbarContent justify="start">
@@ -61,16 +59,22 @@ const Header = () => {
         </Navbar>
       </div>
 
-      {/* Desktop: logo + nav + logo in a subtle bar */}
-      <nav className="hidden h-full items-center gap-5 px-6 sm:flex">
+      {/* Desktop: centered nav tabs with logo */}
+      <nav className="hidden items-center justify-center gap-6 py-2 sm:flex">
         <Link className="shrink-0" href="/">
           <Image
             alt="Logo"
-            height={36}
+            height={28}
             quality={100}
-            src={imageSrc}
-            width={36}
+            src="/logo-b.png"
+            width={28}
           />
+        </Link>
+        <Link
+          className="whitespace-nowrap text-sm font-medium uppercase tracking-wide text-black/80 transition-colors hover:text-black dark:text-white/80 dark:hover:text-white"
+          href="/"
+        >
+          Home
         </Link>
         {sections.map((section) => (
           <Link

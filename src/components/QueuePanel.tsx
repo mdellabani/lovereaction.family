@@ -156,8 +156,9 @@ const QueuePanel = ({
         </div>
       </div>
 
-      {/* Desktop: Side drawer — no backdrop, site stays interactive */}
-      <div className="fixed bottom-0 right-0 top-0 z-[60] hidden w-80 flex-col border-l border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900 sm:flex">
+      {/* Desktop: Side drawer with backdrop */}
+      <div className="fixed inset-0 z-[55] hidden sm:block" onClick={onClose} />
+      <div className="fixed bottom-16 right-0 top-0 z-[60] hidden w-80 flex-col border-l border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900 sm:flex">
         <div className="flex h-full flex-col">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700">

@@ -27,7 +27,7 @@ export default function ClientLayout({
           {isAuthenticated && (
             <>
               <ThemedHeader />
-              <div className="mx-auto min-h-screen max-w-3xl px-4 pt-20 sm:px-8 md:px-16">
+              <div className="mx-auto min-h-screen max-w-5xl px-4 pt-28 sm:px-8 md:px-12">
                 <div className="flex h-full flex-col gap-10 md:gap-20">
                   {children}
                   <PlayerContainer />

@@ -1,5 +1,4 @@
 'use client'
-import Image from 'next/image'
 import Link from 'next/link'
 import { Pause, Play } from 'lucide-react'
 import { PreviewItem } from '@/types/audio'
@@ -27,10 +26,10 @@ const PreviewSummary = <T extends PreviewItem>({
   const card = (
     <div className="group cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm transition-shadow hover:shadow-md dark:bg-gray-900">
       <div className="relative aspect-square">
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           alt={item.title}
-          className="object-cover"
-          fill
+          className="absolute inset-0 h-full w-full object-cover"
           src={item.imageUrl}
         />
         <button
