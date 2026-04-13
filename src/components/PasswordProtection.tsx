@@ -7,7 +7,7 @@ const MEMORIES = Array.from(
   { length: 7 },
   (_, i) => `/memories/memory-${i + 1}.jpg`,
 )
-const SLIDE_DURATION = 2500
+const SLIDE_DURATION = 1800
 
 const PasswordProtection = ({
   setAuthenticated,
@@ -19,38 +19,59 @@ const PasswordProtection = ({
   )
   const [currentSlide, setCurrentSlide] = useState(0)
   const [fadeIn, setFadeIn] = useState(true)
+  const [showSplash, setShowSplash] = useState(false)
+  const [dismissing, setDismissing] = useState(false)
 
   const advanceSlide = useCallback(() => {
     setFadeIn(false)
     setTimeout(() => {
       setCurrentSlide((prev) => (prev + 1) % MEMORIES.length)
       setFadeIn(true)
-    }, 600)
+    }, 400)
   }, [])
 
   useEffect(() => {
-    if (state === 'authenticated') return
+    if (state === 'authenticated' && !showSplash) return
     const interval = setInterval(advanceSlide, SLIDE_DURATION)
     return () => clearInterval(interval)
-  }, [state, advanceSlide])
+  }, [state, showSplash, advanceSlide])
 
   useEffect(() => {
     if (state !== 'loading') return
 
+    const seenSplash = sessionStorage.getItem('splashSeen') === 'true'
+    const password = process.env.NEXT_PUBLIC_PASSWORD
+    const isAuthenticated =
+      !password || localStorage.getItem('authenticated') === 'true'
+
+    if (seenSplash) {
+      // Returning visitor in this session — skip splash
+      if (isAuthenticated) {
+        setState('authenticated')
+        setAuthenticated(true)
+      } else {
+        setState('locked')
+      }
+      return
+    }
+
+    // First visit — show all slides then proceed
+    setShowSplash(true)
+    const splashDuration = MEMORIES.length * SLIDE_DURATION + 400
     const timer = setTimeout(() => {
-      const password = process.env.NEXT_PUBLIC_PASSWORD
-      if (!password) {
-        setState('authenticated')
-        setAuthenticated(true)
-        return
-      }
-      if (localStorage.getItem('authenticated') === 'true') {
-        setState('authenticated')
-        setAuthenticated(true)
-        return
-      }
-      setState('locked')
-    }, 1500)
+      sessionStorage.setItem('splashSeen', 'true')
+      setDismissing(true)
+      // Wait for the fade-out to finish before unmounting
+      setTimeout(() => {
+        setShowSplash(false)
+        if (isAuthenticated) {
+          setState('authenticated')
+          setAuthenticated(true)
+        } else {
+          setState('locked')
+        }
+      }, 1000)
+    }, splashDuration)
 
     return () => clearTimeout(timer)
   }, [state, setAuthenticated])
@@ -71,15 +92,17 @@ const PasswordProtection = ({
     }
   }
 
-  if (state === 'authenticated') return null
+  if (state === 'authenticated' && !showSplash) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-black">
+    <div
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-black transition-opacity duration-1000 ${dismissing ? 'opacity-0' : 'opacity-100'}`}
+    >
       {/* Slideshow background */}
       {MEMORIES.map((src, i) => (
         <Image
           alt=""
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
             i === currentSlide && fadeIn ? 'opacity-50' : 'opacity-0'
           }`}
           fill
