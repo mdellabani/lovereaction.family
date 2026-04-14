@@ -138,7 +138,7 @@ interface PlayerContextProps extends PlayerState {
 
 const PlayerContext = createContext<PlayerContextProps | null>(null)
 
-const CACHE_KEY = 'rss_cache_v3'
+const CACHE_KEY = 'rss_cache_v4'
 
 const parseRSS = async (bustCache = false): Promise<PlayList> => {
   const url = bustCache ? `api/rss?t=${Date.now()}` : 'api/rss'
