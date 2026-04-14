@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import RSSParser from 'rss-parser'
 
 const REVALIDATE_TIME = 60 * 60 * 2 // 2 hours — SoundCloud signed URLs expire frequently
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const bustCache = request.nextUrl.searchParams.has('t')
   const parser = new RSSParser()
   return await parser
     .parseURL(
@@ -11,7 +12,9 @@ export async function GET() {
     .then((feed) =>
       NextResponse.json(feed, {
         headers: {
-          'Cache-Control': `s-maxage=${REVALIDATE_TIME}, stale-while-revalidate`,
+          'Cache-Control': bustCache
+            ? 'no-store'
+            : `s-maxage=${REVALIDATE_TIME}, stale-while-revalidate`,
         },
       }),
     )

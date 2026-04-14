@@ -89,12 +89,13 @@ const AudioPlayer = () => {
             !refreshingRef.current
           ) {
             // Seek/toggle failed once already — URL is likely dead, refresh it
+            // No need to call recoverPlayback: the key={url} prop forces a
+            // remount with the fresh URL, and playing={true} auto-starts it.
             refreshingRef.current = true
-            refreshPodcastUrls()
-              .then(() => setTimeout(() => recoverPlayback(), 1000))
-              .finally(() => {
-                refreshingRef.current = false
-              })
+            stallCountRef.current = 0
+            refreshPodcastUrls().finally(() => {
+              refreshingRef.current = false
+            })
           } else {
             recoverPlayback()
           }

@@ -140,8 +140,9 @@ const PlayerContext = createContext<PlayerContextProps | null>(null)
 
 const CACHE_KEY = 'rss_cache_v3'
 
-const parseRSS = async (): Promise<PlayList> => {
-  const feed = await fetch('api/rss')
+const parseRSS = async (bustCache = false): Promise<PlayList> => {
+  const url = bustCache ? `api/rss?t=${Date.now()}` : 'api/rss'
+  const feed = await fetch(url, bustCache ? { cache: 'no-store' } : undefined)
     .then((res) => res.json())
     .catch((error) => {
       throw new Error('Unable to fetch RSS', error)
@@ -263,7 +264,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 
   const refreshPodcastUrls = useCallback(async () => {
     localStorage.removeItem(CACHE_KEY)
-    const freshPodcasts = await parseRSS()
+    const freshPodcasts = await parseRSS(true)
     cachePlaylists(freshPodcasts)
     setPodcasts(freshPodcasts)
     const urlMap = new Map<string, string>()
