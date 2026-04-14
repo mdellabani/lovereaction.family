@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import RSSParser from 'rss-parser'
 
-const REVALIDATE_TIME = 60 * 60 * 24
+const REVALIDATE_TIME = 60 * 60 * 2 // 2 hours — SoundCloud signed URLs expire frequently
 export async function GET() {
   const parser = new RSSParser()
   return await parser

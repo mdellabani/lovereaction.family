@@ -49,12 +49,14 @@ const AudioPlayer = () => {
     setPlayed,
     setDuration,
     setTrackIndex,
+    refreshPodcastUrls,
   } = usePlayer()
   const playerRef = useRef<ReactPlayer>(null)
   const [isSeeking, setIsSeeking] = useState(false)
   const [queueOpen, setQueueOpen] = useState(false)
   const lastProgressRef = useRef(0)
   const stallTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const refreshingRef = useRef(false)
   const currentTrack = playlist?.tracks[trackIndex]
   const image = currentTrack?.imageUrl || playlist?.imageUrl
 
@@ -314,7 +316,15 @@ const AudioPlayer = () => {
         onDuration={(duration) => setDuration(duration)}
         onEnded={nextTrack}
         onError={() => {
-          setTimeout(() => recoverPlayback(), 2000)
+          const isSoundCloud = currentTrack?.url?.includes('sndcdn.com')
+          if (isSoundCloud && !refreshingRef.current) {
+            refreshingRef.current = true
+            refreshPodcastUrls().finally(() => {
+              refreshingRef.current = false
+            })
+          } else if (!isSoundCloud) {
+            setTimeout(() => recoverPlayback(), 2000)
+          }
         }}
         onProgress={({ played }) => {
           if (!isSeeking) setPlayed(played)

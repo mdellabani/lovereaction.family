@@ -39,6 +39,7 @@ type PlayerAction =
   | { type: 'SET_VOLUME'; payload: number }
   | { type: 'SET_PLAYED'; payload: number }
   | { type: 'SET_DURATION'; payload: number }
+  | { type: 'REFRESH_TRACK_URLS'; urlMap: Map<string, string> }
 
 const playerReducer = (
   state: PlayerState,
@@ -98,6 +99,16 @@ const playerReducer = (
       return { ...state, played: action.payload }
     case 'SET_DURATION':
       return { ...state, duration: action.payload }
+    case 'REFRESH_TRACK_URLS': {
+      const updatedTracks = state.playlist.tracks.map((track) => {
+        const freshUrl = action.urlMap.get(track.title)
+        return freshUrl ? { ...track, url: freshUrl } : track
+      })
+      return {
+        ...state,
+        playlist: { ...state.playlist, tracks: updatedTracks },
+      }
+    }
     default:
       return state
   }
@@ -116,6 +127,7 @@ interface PlayerContextProps extends PlayerState {
   setShowPlayer: (show: boolean) => void
   setCurrentTrackId: (trackId: number) => void
   loadPlaylist: (playlist: PlayList, trackId: number) => void
+  refreshPodcastUrls: () => Promise<void>
   togglePlay: () => void
   toggleLoop: () => void
   toggleMute: () => void
@@ -172,7 +184,7 @@ const parseRSS = async (): Promise<PlayList> => {
   return { title: ALL_PODCASTS, tracks: tracks }
 }
 
-const CACHE_TTL = 24 * 60 * 60 * 1000 // 24 hours
+const CACHE_TTL = 2 * 60 * 60 * 1000 // 2 hours — SoundCloud signed URLs expire frequently
 
 const loadCachedPlaylists = (): PlayList | null => {
   const cached = localStorage.getItem(CACHE_KEY)
@@ -249,6 +261,18 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'SET_TRACK_INDEX', index: index !== -1 ? index : 0 })
   }
 
+  const refreshPodcastUrls = useCallback(async () => {
+    localStorage.removeItem(CACHE_KEY)
+    const freshPodcasts = await parseRSS()
+    cachePlaylists(freshPodcasts)
+    setPodcasts(freshPodcasts)
+    const urlMap = new Map<string, string>()
+    for (const track of freshPodcasts.tracks) {
+      urlMap.set(track.title, track.url)
+    }
+    dispatch({ type: 'REFRESH_TRACK_URLS', urlMap })
+  }, [])
+
   const setTrackIndex = (index: number) =>
     dispatch({ type: 'SET_TRACK_INDEX', index })
   const setShowPlayer = (show: boolean) =>
@@ -278,6 +302,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
         ...state,
         podcasts,
         loadPlaylist,
+        refreshPodcastUrls,
         setTrackIndex,
         setShowPlayer,
         setCurrentTrackId,
