@@ -306,6 +306,7 @@ const AudioPlayer = () => {
       {/* Hidden ReactPlayer */}
       <ReactPlayer
         height="0"
+        key={currentTrack?.url}
         loop={loop}
         muted={muted}
         playing={playing}
@@ -319,13 +320,9 @@ const AudioPlayer = () => {
           const isSoundCloud = currentTrack?.url?.includes('sndcdn.com')
           if (isSoundCloud && !refreshingRef.current) {
             refreshingRef.current = true
-            refreshPodcastUrls()
-              .then(() => {
-                setTimeout(() => recoverPlayback(), 1000)
-              })
-              .finally(() => {
-                refreshingRef.current = false
-              })
+            refreshPodcastUrls().finally(() => {
+              refreshingRef.current = false
+            })
           } else if (!isSoundCloud) {
             setTimeout(() => recoverPlayback(), 2000)
           }
