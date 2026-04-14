@@ -49,15 +49,12 @@ const AudioPlayer = () => {
     setPlayed,
     setDuration,
     setTrackIndex,
-    refreshPodcastUrls,
   } = usePlayer()
   const playerRef = useRef<ReactPlayer>(null)
   const [isSeeking, setIsSeeking] = useState(false)
   const [queueOpen, setQueueOpen] = useState(false)
   const lastProgressRef = useRef(0)
-  const stallCountRef = useRef(0)
   const stallTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const refreshingRef = useRef(false)
   const currentTrack = playlist?.tracks[trackIndex]
   const image = currentTrack?.imageUrl || playlist?.imageUrl
 
@@ -81,26 +78,7 @@ const AudioPlayer = () => {
           current > 0 &&
           Math.abs(current - lastProgressRef.current) < 0.1
         ) {
-          stallCountRef.current += 1
-          const isSoundCloud = currentTrack?.url?.includes('sndcdn.com')
-          if (
-            isSoundCloud &&
-            stallCountRef.current >= 2 &&
-            !refreshingRef.current
-          ) {
-            // Seek/toggle failed once already — URL is likely dead, refresh it
-            // No need to call recoverPlayback: the key={url} prop forces a
-            // remount with the fresh URL, and playing={true} auto-starts it.
-            refreshingRef.current = true
-            stallCountRef.current = 0
-            refreshPodcastUrls().finally(() => {
-              refreshingRef.current = false
-            })
-          } else {
-            recoverPlayback()
-          }
-        } else {
-          stallCountRef.current = 0
+          recoverPlayback()
         }
         lastProgressRef.current = current
       }, 8000)
@@ -109,13 +87,7 @@ const AudioPlayer = () => {
     return () => {
       if (stallTimerRef.current) clearInterval(stallTimerRef.current)
     }
-  }, [
-    playing,
-    isSeeking,
-    recoverPlayback,
-    currentTrack?.url,
-    refreshPodcastUrls,
-  ])
+  }, [playing, isSeeking, recoverPlayback])
 
   const handlePrev = () => {
     if (played < 0.01) {
@@ -343,15 +315,7 @@ const AudioPlayer = () => {
         onDuration={(duration) => setDuration(duration)}
         onEnded={nextTrack}
         onError={() => {
-          const isSoundCloud = currentTrack?.url?.includes('sndcdn.com')
-          if (isSoundCloud && !refreshingRef.current) {
-            refreshingRef.current = true
-            refreshPodcastUrls().finally(() => {
-              refreshingRef.current = false
-            })
-          } else if (!isSoundCloud) {
-            setTimeout(() => recoverPlayback(), 2000)
-          }
+          setTimeout(() => recoverPlayback(), 2000)
         }}
         onProgress={({ played }) => {
           if (!isSeeking) setPlayed(played)

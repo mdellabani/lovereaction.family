@@ -176,7 +176,7 @@ const parseRSS = async (bustCache = false): Promise<PlayList> => {
       artist: artist.trim(),
       description: item.content,
       imageUrl: item.itunes.image,
-      url: item.enclosure?.url,
+      url: `/api/podcast?title=${encodeURIComponent(title)}`,
     }
 
     tracks.push(track)
