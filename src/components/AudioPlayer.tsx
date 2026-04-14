@@ -319,9 +319,13 @@ const AudioPlayer = () => {
           const isSoundCloud = currentTrack?.url?.includes('sndcdn.com')
           if (isSoundCloud && !refreshingRef.current) {
             refreshingRef.current = true
-            refreshPodcastUrls().finally(() => {
-              refreshingRef.current = false
-            })
+            refreshPodcastUrls()
+              .then(() => {
+                setTimeout(() => recoverPlayback(), 1000)
+              })
+              .finally(() => {
+                refreshingRef.current = false
+              })
           } else if (!isSoundCloud) {
             setTimeout(() => recoverPlayback(), 2000)
           }
