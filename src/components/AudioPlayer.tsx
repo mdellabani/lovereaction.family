@@ -55,6 +55,7 @@ const AudioPlayer = () => {
   const [isSeeking, setIsSeeking] = useState(false)
   const [queueOpen, setQueueOpen] = useState(false)
   const lastProgressRef = useRef(0)
+  const stallCountRef = useRef(0)
   const stallTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const refreshingRef = useRef(false)
   const currentTrack = playlist?.tracks[trackIndex]
@@ -80,7 +81,25 @@ const AudioPlayer = () => {
           current > 0 &&
           Math.abs(current - lastProgressRef.current) < 0.1
         ) {
-          recoverPlayback()
+          stallCountRef.current += 1
+          const isSoundCloud = currentTrack?.url?.includes('sndcdn.com')
+          if (
+            isSoundCloud &&
+            stallCountRef.current >= 2 &&
+            !refreshingRef.current
+          ) {
+            // Seek/toggle failed once already — URL is likely dead, refresh it
+            refreshingRef.current = true
+            refreshPodcastUrls()
+              .then(() => setTimeout(() => recoverPlayback(), 1000))
+              .finally(() => {
+                refreshingRef.current = false
+              })
+          } else {
+            recoverPlayback()
+          }
+        } else {
+          stallCountRef.current = 0
         }
         lastProgressRef.current = current
       }, 8000)
@@ -89,7 +108,13 @@ const AudioPlayer = () => {
     return () => {
       if (stallTimerRef.current) clearInterval(stallTimerRef.current)
     }
-  }, [playing, isSeeking, recoverPlayback])
+  }, [
+    playing,
+    isSeeking,
+    recoverPlayback,
+    currentTrack?.url,
+    refreshPodcastUrls,
+  ])
 
   const handlePrev = () => {
     if (played < 0.01) {
