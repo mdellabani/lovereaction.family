@@ -4,7 +4,7 @@ const ThemedHeader = () => {
   return (
     <div className="fixed z-50 w-full">
       {/* Banner strip: zigzag fills left/right, single banner centered */}
-      <div className="relative h-16 w-full overflow-hidden border-b border-gray-200 sm:h-20">
+      <div className="relative h-24 w-full overflow-hidden border-b border-gray-200 sm:h-32">
         {/* Zigzag fill — left side */}
         <div
           className="absolute inset-y-0 left-0 right-1/2"
